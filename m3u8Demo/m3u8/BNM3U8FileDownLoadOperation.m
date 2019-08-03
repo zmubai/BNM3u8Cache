@@ -10,8 +10,7 @@
 
 
 @interface BNM3U8FileDownLoadOperation ()
-@property (nonatomic, assign) NSInteger maxConcurrentCount;
-@property (nonatomic, strong) BNM3U8PlistInfo *plistInfo;
+@property (nonatomic, strong) NSObject <BNM3U8FileDownloadProtocol> *fileInfo;
 @property (nonatomic, strong) BNM3U8FileDownLoadOperationResultBlock resultBlock;
 @property (assign, nonatomic, getter = isExecuting) BOOL executing;
 @property (assign, nonatomic, getter = isFinished) BOOL finished;
@@ -22,12 +21,11 @@
 @synthesize executing = _executing;
 @synthesize finished = _finished;
 
-- (instancetype)initWithPlistInfo:(BNM3U8PlistInfo *)plistInfo maxConcurrentCount:(NSInteger)maxConcurrentCount resultBlock:(BNM3U8FileDownLoadOperationResultBlock)resultBlock{
-    NSParameterAssert(plistInfo);
+- (instancetype)initWithFileInfo:(NSObject<BNM3U8FileDownloadProtocol> *)fileInfo  resultBlock:(BNM3U8FileDownLoadOperationResultBlock)resultBlock{
+    NSParameterAssert(fileInfo);
     self = [super init];
     if (self) {
-        self.plistInfo = plistInfo;
-        self.maxConcurrentCount = maxConcurrentCount;
+        self.fileInfo = fileInfo;
         self.resultBlock = resultBlock;
     }
     return self;

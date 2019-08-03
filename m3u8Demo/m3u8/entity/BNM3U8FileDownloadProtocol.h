@@ -11,7 +11,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol BNM3U8FileDownloadProtocol <NSObject>
-+ (NSURL *)downloadUrl;
+@required
+- (NSString *)downloadUrl;
 @end
 
 NS_ASSUME_NONNULL_END

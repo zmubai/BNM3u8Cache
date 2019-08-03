@@ -18,7 +18,9 @@ typedef NS_OPTIONS(NSUInteger, BNM3U8DownloadSupportNetOption) {
     BNM3U8DownloadSupportNetOptionAll = BNM3U8DownloadSupportNetOptionWifi | BNM3U8DownloadSupportNetOptionMobile,
 };
 
-typedef  void(^BNM3U8DownloadResultBlock)(NSError * _Nullable error, NSString * _Nullable localPlayUrlString);
+///relativeUrl为 相对路径 ex:/movice/movice.plist  完整路径为 rootPath/movice/moiece.plist
+///rootPath 对应的是local http service 的 root path
+typedef  void(^BNM3U8DownloadResultBlock)(NSError * _Nullable error, NSString * _Nullable relativeUrl);
 
 @interface BNM3U8ManagerConfig : NSObject
 @property (nonatomic,copy) NSString *downloadDstRootPath;
