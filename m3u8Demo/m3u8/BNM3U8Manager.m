@@ -49,6 +49,16 @@
     NSParameterAssert(config.url);
     BNM3U8DownloadOperation *operation =  BNM3U8DownloadOperation.new;
     operation.config = config;
+    ///set callBlack
+    __weak __typeof(self) weakSelf= self;
+    [operation setResultBlock:^(NSError * _Nullable error, NSString * _Nullable localPlayUrlString) {
+        ///下载回调
+        if(resultBlock) resultBlock(error,localPlayUrlString);
+        LOCK(weakSelf.operationSemaphore);
+        [weakSelf.downloadOperationsMap removeObjectForKey:config.url];
+        UNLOCK(weakSelf.operationSemaphore);
+    }];
+    
     LOCK(_operationSemaphore);
     [_downloadOperationsMap setValue:operation forKey:config.url];
     [_downloadQueue addOperation:operation];
