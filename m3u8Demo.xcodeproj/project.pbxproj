@@ -13,6 +13,15 @@
 		BB8E5D4422B3965000623A0D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BB8E5D4322B3965000623A0D /* Assets.xcassets */; };
 		BB8E5D4722B3965000623A0D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BB8E5D4522B3965000623A0D /* LaunchScreen.storyboard */; };
 		BB8E5D4A22B3965000623A0D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8E5D4922B3965000623A0D /* main.m */; };
+		BB8E5D5522B3978A00623A0D /* BNM3U8Manager.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8E5D5422B3978A00623A0D /* BNM3U8Manager.m */; };
+		BB8E5D5922B3980E00623A0D /* BNM3U8DownloadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8E5D5822B3980E00623A0D /* BNM3U8DownloadOperation.m */; };
+		BB8E5D5C22B399A100623A0D /* BNM3U8AnalysisService.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8E5D5B22B399A100623A0D /* BNM3U8AnalysisService.m */; };
+		BB8E5D6022B39E9C00623A0D /* BNM3UTsInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8E5D5F22B39E9C00623A0D /* BNM3UTsInfo.m */; };
+		BB8E5D6322B39EA900623A0D /* BNM3UKeyInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8E5D6222B39EA900623A0D /* BNM3UKeyInfo.m */; };
+		BB8E5D6722B39F1800623A0D /* BNM3U8FileService.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8E5D6622B39F1800623A0D /* BNM3U8FileService.m */; };
+		BB8E5D6A22B3A1A300623A0D /* BNM3U8FileDownLoadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8E5D6922B3A1A300623A0D /* BNM3U8FileDownLoadOperation.m */; };
+		BB8E5D6E22B3B0CB00623A0D /* BNM3U8PlistInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8E5D6D22B3B0CB00623A0D /* BNM3U8PlistInfo.m */; };
+		DB74990822E2F3140089FF1D /* BNM3U8DownloadConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = DB74990722E2F3140089FF1D /* BNM3U8DownloadConfig.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +35,25 @@
 		BB8E5D4622B3965000623A0D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BB8E5D4822B3965000623A0D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BB8E5D4922B3965000623A0D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		BB8E5D5322B3978A00623A0D /* BNM3U8Manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BNM3U8Manager.h; sourceTree = "<group>"; };
+		BB8E5D5422B3978A00623A0D /* BNM3U8Manager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BNM3U8Manager.m; sourceTree = "<group>"; };
+		BB8E5D5722B3980E00623A0D /* BNM3U8DownloadOperation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BNM3U8DownloadOperation.h; sourceTree = "<group>"; };
+		BB8E5D5822B3980E00623A0D /* BNM3U8DownloadOperation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BNM3U8DownloadOperation.m; sourceTree = "<group>"; };
+		BB8E5D5A22B399A100623A0D /* BNM3U8AnalysisService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BNM3U8AnalysisService.h; sourceTree = "<group>"; };
+		BB8E5D5B22B399A100623A0D /* BNM3U8AnalysisService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BNM3U8AnalysisService.m; sourceTree = "<group>"; };
+		BB8E5D5E22B39E9C00623A0D /* BNM3UTsInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BNM3UTsInfo.h; sourceTree = "<group>"; };
+		BB8E5D5F22B39E9C00623A0D /* BNM3UTsInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BNM3UTsInfo.m; sourceTree = "<group>"; };
+		BB8E5D6122B39EA900623A0D /* BNM3UKeyInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BNM3UKeyInfo.h; sourceTree = "<group>"; };
+		BB8E5D6222B39EA900623A0D /* BNM3UKeyInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BNM3UKeyInfo.m; sourceTree = "<group>"; };
+		BB8E5D6422B39EDB00623A0D /* BNM3U8FileDownloadProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BNM3U8FileDownloadProtocol.h; sourceTree = "<group>"; };
+		BB8E5D6522B39F1800623A0D /* BNM3U8FileService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BNM3U8FileService.h; sourceTree = "<group>"; };
+		BB8E5D6622B39F1800623A0D /* BNM3U8FileService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BNM3U8FileService.m; sourceTree = "<group>"; };
+		BB8E5D6822B3A1A300623A0D /* BNM3U8FileDownLoadOperation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BNM3U8FileDownLoadOperation.h; sourceTree = "<group>"; };
+		BB8E5D6922B3A1A300623A0D /* BNM3U8FileDownLoadOperation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BNM3U8FileDownLoadOperation.m; sourceTree = "<group>"; };
+		BB8E5D6C22B3B0CB00623A0D /* BNM3U8PlistInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BNM3U8PlistInfo.h; sourceTree = "<group>"; };
+		BB8E5D6D22B3B0CB00623A0D /* BNM3U8PlistInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BNM3U8PlistInfo.m; sourceTree = "<group>"; };
+		DB74990622E2F3140089FF1D /* BNM3U8DownloadConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BNM3U8DownloadConfig.h; sourceTree = "<group>"; };
+		DB74990722E2F3140089FF1D /* BNM3U8DownloadConfig.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BNM3U8DownloadConfig.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +90,8 @@
 				BB8E5D3B22B3964D00623A0D /* AppDelegate.m */,
 				BB8E5D3D22B3964D00623A0D /* ViewController.h */,
 				BB8E5D3E22B3964D00623A0D /* ViewController.m */,
+				BB8E5D6B22B3A1B700623A0D /* httpService */,
+				BB8E5D5622B3979000623A0D /* m3u8 */,
 				BB8E5D4022B3964D00623A0D /* Main.storyboard */,
 				BB8E5D4322B3965000623A0D /* Assets.xcassets */,
 				BB8E5D4522B3965000623A0D /* LaunchScreen.storyboard */,
@@ -69,6 +99,47 @@
 				BB8E5D4922B3965000623A0D /* main.m */,
 			);
 			path = m3u8Demo;
+			sourceTree = "<group>";
+		};
+		BB8E5D5622B3979000623A0D /* m3u8 */ = {
+			isa = PBXGroup;
+			children = (
+				BB8E5D5322B3978A00623A0D /* BNM3U8Manager.h */,
+				BB8E5D5422B3978A00623A0D /* BNM3U8Manager.m */,
+				BB8E5D5A22B399A100623A0D /* BNM3U8AnalysisService.h */,
+				BB8E5D5B22B399A100623A0D /* BNM3U8AnalysisService.m */,
+				BB8E5D5D22B39D4800623A0D /* entity */,
+				BB8E5D5722B3980E00623A0D /* BNM3U8DownloadOperation.h */,
+				BB8E5D5822B3980E00623A0D /* BNM3U8DownloadOperation.m */,
+				BB8E5D6522B39F1800623A0D /* BNM3U8FileService.h */,
+				BB8E5D6622B39F1800623A0D /* BNM3U8FileService.m */,
+			);
+			path = m3u8;
+			sourceTree = "<group>";
+		};
+		BB8E5D5D22B39D4800623A0D /* entity */ = {
+			isa = PBXGroup;
+			children = (
+				BB8E5D6422B39EDB00623A0D /* BNM3U8FileDownloadProtocol.h */,
+				BB8E5D6C22B3B0CB00623A0D /* BNM3U8PlistInfo.h */,
+				BB8E5D6D22B3B0CB00623A0D /* BNM3U8PlistInfo.m */,
+				BB8E5D5E22B39E9C00623A0D /* BNM3UTsInfo.h */,
+				BB8E5D5F22B39E9C00623A0D /* BNM3UTsInfo.m */,
+				BB8E5D6122B39EA900623A0D /* BNM3UKeyInfo.h */,
+				BB8E5D6222B39EA900623A0D /* BNM3UKeyInfo.m */,
+				BB8E5D6822B3A1A300623A0D /* BNM3U8FileDownLoadOperation.h */,
+				BB8E5D6922B3A1A300623A0D /* BNM3U8FileDownLoadOperation.m */,
+				DB74990622E2F3140089FF1D /* BNM3U8DownloadConfig.h */,
+				DB74990722E2F3140089FF1D /* BNM3U8DownloadConfig.m */,
+			);
+			path = entity;
+			sourceTree = "<group>";
+		};
+		BB8E5D6B22B3A1B700623A0D /* httpService */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = httpService;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -141,8 +212,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB8E5D6022B39E9C00623A0D /* BNM3UTsInfo.m in Sources */,
 				BB8E5D3F22B3964D00623A0D /* ViewController.m in Sources */,
+				BB8E5D5C22B399A100623A0D /* BNM3U8AnalysisService.m in Sources */,
+				BB8E5D6322B39EA900623A0D /* BNM3UKeyInfo.m in Sources */,
 				BB8E5D4A22B3965000623A0D /* main.m in Sources */,
+				BB8E5D6722B39F1800623A0D /* BNM3U8FileService.m in Sources */,
+				BB8E5D5922B3980E00623A0D /* BNM3U8DownloadOperation.m in Sources */,
+				BB8E5D6E22B3B0CB00623A0D /* BNM3U8PlistInfo.m in Sources */,
+				BB8E5D5522B3978A00623A0D /* BNM3U8Manager.m in Sources */,
+				DB74990822E2F3140089FF1D /* BNM3U8DownloadConfig.m in Sources */,
+				BB8E5D6A22B3A1A300623A0D /* BNM3U8FileDownLoadOperation.m in Sources */,
 				BB8E5D3C22B3964D00623A0D /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -286,6 +366,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 54JV57CX88;
 				INFOPLIST_FILE = m3u8Demo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -302,6 +383,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 54JV57CX88;
 				INFOPLIST_FILE = m3u8Demo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
