@@ -21,7 +21,7 @@
 		BB8E5D6722B39F1800623A0D /* BNM3U8FileService.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8E5D6622B39F1800623A0D /* BNM3U8FileService.m */; };
 		BB8E5D6A22B3A1A300623A0D /* BNM3U8FileDownLoadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8E5D6922B3A1A300623A0D /* BNM3U8FileDownLoadOperation.m */; };
 		BB8E5D6E22B3B0CB00623A0D /* BNM3U8PlistInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8E5D6D22B3B0CB00623A0D /* BNM3U8PlistInfo.m */; };
-		DB74990822E2F3140089FF1D /* BNM3U8DownloadConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = DB74990722E2F3140089FF1D /* BNM3U8DownloadConfig.m */; };
+		DB691DE622F532B100CEF3CE /* BNM3U8DownloadConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = DB691DE422F532B100CEF3CE /* BNM3U8DownloadConfig.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,8 +52,8 @@
 		BB8E5D6922B3A1A300623A0D /* BNM3U8FileDownLoadOperation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BNM3U8FileDownLoadOperation.m; sourceTree = "<group>"; };
 		BB8E5D6C22B3B0CB00623A0D /* BNM3U8PlistInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BNM3U8PlistInfo.h; sourceTree = "<group>"; };
 		BB8E5D6D22B3B0CB00623A0D /* BNM3U8PlistInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BNM3U8PlistInfo.m; sourceTree = "<group>"; };
-		DB74990622E2F3140089FF1D /* BNM3U8DownloadConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BNM3U8DownloadConfig.h; sourceTree = "<group>"; };
-		DB74990722E2F3140089FF1D /* BNM3U8DownloadConfig.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BNM3U8DownloadConfig.m; sourceTree = "<group>"; };
+		DB691DE422F532B100CEF3CE /* BNM3U8DownloadConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BNM3U8DownloadConfig.m; sourceTree = "<group>"; };
+		DB691DE522F532B100CEF3CE /* BNM3U8DownloadConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BNM3U8DownloadConfig.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,11 +106,13 @@
 			children = (
 				BB8E5D5322B3978A00623A0D /* BNM3U8Manager.h */,
 				BB8E5D5422B3978A00623A0D /* BNM3U8Manager.m */,
+				DB691DE522F532B100CEF3CE /* BNM3U8DownloadConfig.h */,
+				DB691DE422F532B100CEF3CE /* BNM3U8DownloadConfig.m */,
+				BB8E5D5722B3980E00623A0D /* BNM3U8DownloadOperation.h */,
+				BB8E5D5822B3980E00623A0D /* BNM3U8DownloadOperation.m */,
 				BB8E5D5A22B399A100623A0D /* BNM3U8AnalysisService.h */,
 				BB8E5D5B22B399A100623A0D /* BNM3U8AnalysisService.m */,
 				BB8E5D5D22B39D4800623A0D /* entity */,
-				BB8E5D5722B3980E00623A0D /* BNM3U8DownloadOperation.h */,
-				BB8E5D5822B3980E00623A0D /* BNM3U8DownloadOperation.m */,
 				BB8E5D6522B39F1800623A0D /* BNM3U8FileService.h */,
 				BB8E5D6622B39F1800623A0D /* BNM3U8FileService.m */,
 			);
@@ -129,8 +131,6 @@
 				BB8E5D6222B39EA900623A0D /* BNM3UKeyInfo.m */,
 				BB8E5D6822B3A1A300623A0D /* BNM3U8FileDownLoadOperation.h */,
 				BB8E5D6922B3A1A300623A0D /* BNM3U8FileDownLoadOperation.m */,
-				DB74990622E2F3140089FF1D /* BNM3U8DownloadConfig.h */,
-				DB74990722E2F3140089FF1D /* BNM3U8DownloadConfig.m */,
 			);
 			path = entity;
 			sourceTree = "<group>";
@@ -212,6 +212,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB691DE622F532B100CEF3CE /* BNM3U8DownloadConfig.m in Sources */,
 				BB8E5D6022B39E9C00623A0D /* BNM3UTsInfo.m in Sources */,
 				BB8E5D3F22B3964D00623A0D /* ViewController.m in Sources */,
 				BB8E5D5C22B399A100623A0D /* BNM3U8AnalysisService.m in Sources */,
@@ -221,7 +222,6 @@
 				BB8E5D5922B3980E00623A0D /* BNM3U8DownloadOperation.m in Sources */,
 				BB8E5D6E22B3B0CB00623A0D /* BNM3U8PlistInfo.m in Sources */,
 				BB8E5D5522B3978A00623A0D /* BNM3U8Manager.m in Sources */,
-				DB74990822E2F3140089FF1D /* BNM3U8DownloadConfig.m in Sources */,
 				BB8E5D6A22B3A1A300623A0D /* BNM3U8FileDownLoadOperation.m in Sources */,
 				BB8E5D3C22B3964D00623A0D /* AppDelegate.m in Sources */,
 			);

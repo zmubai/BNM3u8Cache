@@ -21,7 +21,7 @@ typedef void(^BNM3U8DownloadOperationResultBlock)( NSError * _Nullable error, NS
  */
 @interface BNM3U8DownloadOperation : NSOperation
 @property (nonatomic, strong) BNM3U8DownloadConfig *config;
-@property (nonatomic,copy) NSString *downloadRootPath;
+@property (nonatomic,copy) NSString *downloadDstRootPath;
 @property (nonatomic, copy) BNM3U8DownloadOperationResultBlock resultBlock;
 
 @end
