@@ -10,6 +10,8 @@
 #import "BNM3U8AnalysisService.h"
 #import "BNM3U8PlistInfo.h"
 #import "BNM3U8FileDownLoadOperation.h"
+#import "ZBLM3u8FileManager.h"
+#import "BNTool.h"
 
 #define LOCK(lock) dispatch_semaphore_wait(lock, DISPATCH_TIME_FOREVER);
 #define UNLOCK(lock) dispatch_semaphore_signal(lock);
@@ -21,7 +23,7 @@
 @property (nonatomic, copy) NSString *downloadDstRootPath;
 @property (nonatomic, copy) BNM3U8DownloadOperationResultBlock resultBlock;
 ///不存在 cannel 单个文件 故不需要数组容器存储.但需要用来计算BNM3U8DownloadOperation 是否完成。或许用不上
-@property (nonatomic,strong) NSMutableDictionary <NSString*,BNM3U8FileDownLoadOperation*> *downloadOperationsMap;
+@property (nonatomic, strong) NSMutableDictionary <NSString*,BNM3U8FileDownLoadOperation*> *downloadOperationsMap;
 @property (nonatomic, strong) BNM3U8PlistInfo *plistInfo;
 @property (nonatomic, strong) dispatch_semaphore_t operationSemaphore;
 @property (nonatomic, strong) NSOperationQueue *downloadQueue;
@@ -71,7 +73,7 @@
         //获取文本文件，发起下一级下载
         [BNM3U8AnalysisService analysisWithURL:_config.url  rootPath:_downloadDstRootPath  resultBlock:^(NSError * _Nullable error, BNM3U8PlistInfo * _Nullable plistInfo) {
             if (error) {
-            ///failed
+                ///failed
                 self.resultBlock(error, nil);
                 [self done];
                 return;
@@ -139,15 +141,15 @@
     LOCK(self.operationSemaphore);
     [self.downloadOperationsMap removeAllObjects];
     UNLOCK(self.operationSemaphore);
-
+    
     @synchronized (self) {
         self.downloadSuccessCount = 0;
         self.downloadFailCount = 0;
-//        if (self.ownedSession) {
-//            [self.ownedSession invalidateAndCancel];
-//            self.ownedSession =
-//            nil;
-        }
+        //        if (self.ownedSession) {
+        //            [self.ownedSession invalidateAndCancel];
+        //            self.ownedSession =
+        //            nil;
+    }
 }
 
 - (void)setFinished:(BOOL)finished {
@@ -172,7 +174,7 @@
     NSParameterAssert([self.downloadOperationsMap valueForKey:url]);
     LOCK(_operationSemaphore);
     [self.downloadOperationsMap removeObjectForKey:url];
-//    [self checkFinish];
+    //    [self checkFinish];
     UNLOCK(_operationSemaphore);
 }
 
@@ -200,10 +202,18 @@
             if(_resultBlock) _resultBlock(error,nil);
         }
         else{
-            if(_resultBlock) _resultBlock(nil,@"local url");
+            NSString *m3u8String = [BNM3U8AnalysisService synthesisLocalM3u8Withm3u8Info:_plistInfo withLocaHost:self.config.localhost];
+            NSString *dstPath = [[_downloadDstRootPath stringByAppendingString:[BNTool uuidWithUrl:_config.url]]stringByAppendingPathComponent:@"local.m3u8"];
+            [[ZBLM3u8FileManager shareInstance]saveDate:[m3u8String dataUsingEncoding:NSUTF8StringEncoding] ToFile:dstPath completaionHandler:^(NSError *error) {
+                if (!error) {
+                    if(self.resultBlock) self.resultBlock(nil,[[self.config.localhost stringByAppendingString:[BNTool uuidWithUrl:self.config.url]]stringByAppendingPathComponent:@"local.m3u8"]);
+                }
+                else{
+                    if(self.resultBlock) self.resultBlock(error,nil);
+                }
+            }];
         }
     }
     UNLOCK(_downloadResultCountSemaphore);
 }
-
 @end

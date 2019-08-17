@@ -8,6 +8,7 @@
 
 #import "BNM3U8Manager.h"
 #import "BNM3U8DownloadOperation.h"
+#import <AFURLSessionManager.h>
 
 #define LOCK(lock) dispatch_semaphore_wait(lock, DISPATCH_TIME_FOREVER);
 #define UNLOCK(lock) dispatch_semaphore_signal(lock);
@@ -16,11 +17,11 @@
 @end
 
 @interface BNM3U8Manager()
-@property (nonatomic,strong) BNM3U8ManagerConfig *config;
-///用于取消操作，成功后移除
-@property (nonatomic,strong) NSMutableDictionary <NSString*, BNM3U8DownloadOperation*> *downloadOperationsMap;
-@property (nonatomic,strong) dispatch_semaphore_t operationSemaphore;
-@property (nonatomic,strong) NSOperationQueue *downloadQueue;
+@property (nonatomic, strong) BNM3U8ManagerConfig *config;
+@property (nonatomic, strong) NSMutableDictionary <NSString*, BNM3U8DownloadOperation*> *downloadOperationsMap;
+@property (nonatomic, strong) dispatch_semaphore_t operationSemaphore;
+@property (nonatomic, strong) NSOperationQueue *downloadQueue;
+@property (nonatomic, strong) AFURLSessionManager *sessionManager;
 @end
 
 @implementation BNM3U8Manager
@@ -42,13 +43,10 @@
 
 
 #pragma mark -
-/*下载队列中添加
- 创建operation  添加到queue中。 系统控制执行
- */
 - (void)downloadVideoWithConfig:(BNM3U8DownloadConfig *)config resultBlock:(BNM3U8DownloadResultBlock)resultBlock{
     NSParameterAssert(config.url);
     __weak __typeof(self) weakSelf= self;
-    BNM3U8DownloadOperation *operation =  [[BNM3U8DownloadOperation alloc]initWithConfig:config downloadDstRootPath:self.config.downloadDstRootPath resultBlock:^(NSError * _Nullable error, NSString * _Nullable localPlayUrlString) {
+    BNM3U8DownloadOperation *operation =  [[BNM3U8DownloadOperation alloc]initWithConfig:config downloadDstRootPath:self.config.downloadDstRootPath sessionManager:self.sessionManager resultBlock:^(NSError * _Nullable error, NSString * _Nullable localPlayUrlString) {
         ///下载回调
         if(resultBlock) resultBlock(error,localPlayUrlString);
         LOCK(weakSelf.operationSemaphore);
@@ -95,6 +93,16 @@
 /*queue 能实现，发起的不能挂起*/
 - (void)suspend{
     _downloadQueue.suspended = YES;
+}
+
+- (AFURLSessionManager *)sessionManager
+{
+    if (!_sessionManager) {
+        _sessionManager = [[AFURLSessionManager alloc]initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+        //// should create customer queue
+        _sessionManager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    }
+    return _sessionManager;
 }
 
 @end

@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface BNM3U8DownloadConfig : NSObject
 @property (nonatomic, copy) NSString *url;
 @property (nonatomic, assign) NSInteger maxConcurrenceCount;
+@property (nonatomic, copy) NSString *localhost;
 @end
 
 NS_ASSUME_NONNULL_END

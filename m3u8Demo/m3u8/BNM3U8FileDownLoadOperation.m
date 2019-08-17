@@ -45,6 +45,13 @@
             [self reset];
             return;
         }
+        ///file already exit
+        if([ZBLM3u8FileManager exitItemWithPath:_fileInfo.dstFilePath]){
+            _resultBlock(nil,_fileInfo);
+            [self done];
+            return;
+        }
+        
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:_fileInfo.downloadUrl]];
         __block NSData *data = nil;
         __weak __typeof(self) weakSelf = self;

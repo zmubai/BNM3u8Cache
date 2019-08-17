@@ -9,9 +9,12 @@
 #import "BNM3U8fileInfo.h"
 
 @implementation BNM3U8fileInfo
-- (NSString *)downloadUrl
-{
-    return self.oriUrlString;
+- (NSString *)downloadUrl{
+    return _oriUrlString;
+}
+
+- (NSString *)dstFilePath{
+    return _diskPath;
 }
 @end
 

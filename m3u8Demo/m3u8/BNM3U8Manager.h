@@ -23,10 +23,10 @@ typedef NS_OPTIONS(NSUInteger, BNM3U8DownloadSupportNetOption) {
 typedef  void(^BNM3U8DownloadResultBlock)(NSError * _Nullable error, NSString * _Nullable relativeUrl);
 
 @interface BNM3U8ManagerConfig : NSObject
-@property (nonatomic,copy) NSString *downloadDstRootPath;
-@property (nonatomic,assign) NSInteger videoMaxConcurrenceCount;
+@property (nonatomic, copy) NSString *downloadDstRootPath;
+@property (nonatomic, assign) NSInteger videoMaxConcurrenceCount;
 /*允许下载的网络类型支持（移动网络，wifi）*/
-@property (nonatomic,assign) BNM3U8DownloadSupportNetOption netOption;
+@property (nonatomic, assign) BNM3U8DownloadSupportNetOption netOption;
 @end
 
 @interface BNM3U8Manager : NSObject

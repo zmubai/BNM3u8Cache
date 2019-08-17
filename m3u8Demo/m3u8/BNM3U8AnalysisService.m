@@ -10,8 +10,6 @@
 #import "NSString+m3u8.h"
 #import "BNM3U8PlistInfo.h"
 #import "BNM3U8PlistInfo.h"
-
-//#import "ZBLM3u8Setting.h"
 #import "BNTool.h"
 #import "ZBLM3u8FileManager.h"
 
@@ -38,7 +36,7 @@ inline NSString *fullPerfixPath(NSString *rootPath,NSString *url){
     if (oriM3u8String.length) {
         NSLog(@"use local oriM3u8Info");
         @try {
-            [self analysisWithOriUrlString:urlStr m3u8String:oriM3u8String resultBlock:resultBlock];
+            [self analysisWithOriUrlString:urlStr m3u8String:oriM3u8String rootPath:rootPath resultBlock:resultBlock];
         } @catch (NSException *exception) {
             happenException = YES;
             [[ZBLM3u8FileManager shareInstance]removeFileWithPath:oriM3u8Path];
@@ -67,7 +65,7 @@ inline NSString *fullPerfixPath(NSString *rootPath,NSString *url){
             resultBlock([[NSError alloc]initWithDomain:@"ZBLM3u8AnalysiserResponeErrorDomain" code:NSURLErrorBadServerResponse userInfo:nil],nil);
             return;
         }
-        [self analysisWithOriUrlString:urlStr m3u8String:m3u8Str resultBlock:resultBlock];
+        [self analysisWithOriUrlString:urlStr m3u8String:m3u8Str rootPath:rootPath resultBlock:resultBlock];
     } @catch (NSException *exception) {
         happenException = YES;
         resultBlock([[NSError alloc]initWithDomain:@"ZBLM3u8AnalysiserAnalysisErrorDomain" code:NSURLErrorUnknown userInfo:@{@"info":exception.reason}],nil);
@@ -80,7 +78,7 @@ inline NSString *fullPerfixPath(NSString *rootPath,NSString *url){
     }
 }
 
-+ (void)analysisWithOriUrlString:(NSString*)OriUrlString m3u8String:(NSString*)m3u8String resultBlock:(BNM3U8AnalysisServiceResultBlock)resultBlock
++ (void)analysisWithOriUrlString:(NSString*)OriUrlString m3u8String:(NSString*)m3u8String rootPath:(NSString *)rootPath resultBlock:(BNM3U8AnalysisServiceResultBlock)resultBlock
 {
     /*
      "https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_360_1000000.m3u8"
@@ -120,6 +118,7 @@ inline NSString *fullPerfixPath(NSString *rootPath,NSString *url){
         /* /md5(url)/keyName*/
         fileInfo.relativeUrl =  [NSString stringWithFormat:@"/%@/key",[BNTool uuidWithUrl:OriUrlString]];
         [fileInfos addObject:fileInfo];
+        fileInfo.diskPath =  [NSString stringWithFormat:@"%@%@",fullPerfixPath(rootPath, OriUrlString),fileInfo.relativeUrl];
     }
     NSRange tsRange = [m3u8String rangeOfString:@"#EXTINF:"];
     if (tsRange.location == NSNotFound) {
@@ -147,6 +146,7 @@ inline NSString *fullPerfixPath(NSString *rootPath,NSString *url){
             //                                     [ZBLM3u8Setting localHost],
             //                                     [ZBLM3u8Setting uuidWithUrl:OriUrlString],
             //                                     [ZBLM3u8Setting tsFileWithIdentify:@(fileInfo.index).stringValue]];
+            fileInfo.diskPath =  [NSString stringWithFormat:@"%@%@",fullPerfixPath(rootPath, OriUrlString),fileInfo.relativeUrl];
             [fileInfos addObject:fileInfo];
             tsRange = [m3u8String rangeOfString:@"#EXTINF:"];
             if (tsRange.location != NSNotFound) {
@@ -160,8 +160,11 @@ inline NSString *fullPerfixPath(NSString *rootPath,NSString *url){
     resultBlock(nil,info);
 }
 
-+ (NSString*)synthesisLocalM3u8Withm3u8Info:(BNM3U8PlistInfo *)m3u8Info
++ (NSString*)synthesisLocalM3u8Withm3u8Info:(BNM3U8PlistInfo *)m3u8Info withLocaHost:(nonnull NSString *)localhost
 {
+    if (!localhost.length) {
+        localhost = @"http://127.0.0.1:8080";
+    }
     NSString *newM3u8String = @"";
     
     NSString *header = @"#EXTM3U\n";
@@ -183,7 +186,7 @@ inline NSString *fullPerfixPath(NSString *rootPath,NSString *url){
             keyStr = [NSString stringWithFormat:@"#EXT-X-KEY:METHOD=%@,URI=\"%@\",IV=%@\n",m3u8Info.keyMethod,obj.relativeUrl,m3u8Info.keyIv];
         }
         else{
-            NSString *tsInfo = [NSString stringWithFormat:@"#EXTINF:%.6lf,\n%@\n",obj.duration.floatValue,obj.relativeUrl];
+            NSString *tsInfo = [NSString stringWithFormat:@"#EXTINF:%.6lf,\n%@\n",obj.duration.floatValue,[localhost stringByAppendingPathComponent:obj.relativeUrl]];
             body =  [body stringByAppendingString:tsInfo];
             if (obj.isHasDiscontiunity) body = [body stringByAppendingString:@"#EXT-X-DISCONTINUITY\n"];
         }
