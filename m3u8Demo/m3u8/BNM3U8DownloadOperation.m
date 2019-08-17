@@ -11,17 +11,24 @@
 #import "BNM3U8PlistInfo.h"
 #import "BNM3U8FileDownLoadOperation.h"
 
+#define LOCK(lock) dispatch_semaphore_wait(lock, DISPATCH_TIME_FOREVER);
+#define UNLOCK(lock) dispatch_semaphore_signal(lock);
+
 @interface BNM3U8DownloadOperation ()
 @property (assign, nonatomic, getter = isExecuting) BOOL executing;
 @property (assign, nonatomic, getter = isFinished) BOOL finished;
 @property (nonatomic, strong) BNM3U8DownloadConfig *config;
 @property (nonatomic, copy) NSString *downloadDstRootPath;
 @property (nonatomic, copy) BNM3U8DownloadOperationResultBlock resultBlock;
-///不存在 cannel 单个文件 故不需要数组容器存储.但需要用来计算BNM3U8DownloadOperation 是否完成。
+///不存在 cannel 单个文件 故不需要数组容器存储.但需要用来计算BNM3U8DownloadOperation 是否完成。或许用不上
 @property (nonatomic,strong) NSMutableDictionary <NSString*,BNM3U8FileDownLoadOperation*> *downloadOperationsMap;
 @property (nonatomic, strong) BNM3U8PlistInfo *plistInfo;
-@property (nonatomic,strong) dispatch_semaphore_t operationSemaphore;
-@property (nonatomic,strong) NSOperationQueue *downloadQueue;
+@property (nonatomic, strong) dispatch_semaphore_t operationSemaphore;
+@property (nonatomic, strong) NSOperationQueue *downloadQueue;
+///需要考虑 cannel 的情况
+@property (nonatomic, strong) dispatch_semaphore_t downloadResultCountSemaphore;
+@property (nonatomic, assign) NSInteger downloadSuccessCount;
+@property (nonatomic, assign) NSInteger downloadFailCount;
 @end
 
 @implementation BNM3U8DownloadOperation
@@ -38,6 +45,7 @@
         self.downloadDstRootPath = path;
         self.resultBlock = resultBlock;
         self.operationSemaphore = dispatch_semaphore_create(1);
+        self.downloadResultCountSemaphore = dispatch_semaphore_create(1);
         self.downloadQueue = [[NSOperationQueue alloc]init];
         self.downloadQueue.maxConcurrentOperationCount = self.config.maxConcurrenceCount;
         self.downloadOperationsMap = NSMutableDictionary.new;
@@ -59,7 +67,7 @@
         __unsafe_unretained __typeof(self) unownedSelf = self;
         
         //获取文本文件，发起下一级下载
-        [BNM3U8AnalysisService analysisWithURL:self.config.url resultBlock:^(NSError * _Nullable error, BNM3U8PlistInfo * _Nullable plistInfo) {
+        [BNM3U8AnalysisService analysisWithURL:_config.url  rootPath:_downloadDstRootPath  resultBlock:^(NSError * _Nullable error, BNM3U8PlistInfo * _Nullable plistInfo) {
             if (error) {
             ///failed
                 self.resultBlock(error, nil);
@@ -70,25 +78,40 @@
             ///to download 发起下一级下载
             [plistInfo.fileInfos enumerateObjectsUsingBlock:^(BNM3U8fileInfo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 NSParameterAssert(obj.downloadUrl);
-                BNM3U8FileDownLoadOperation *operation = [[BNM3U8FileDownLoadOperation alloc]initWithFileInfo:obj resultBlock:^(NSError * _Nullable error, NSString * _Nullable localPlayUrlString) {
-                    if(!unownedSelf.resultBlock) return ;
+                BNM3U8FileDownLoadOperation *operation = [[BNM3U8FileDownLoadOperation alloc]initWithFileInfo:obj resultBlock:^(NSError * _Nullable error) {
+                    /// remove from map
+                    LOCK(unownedSelf.operationSemaphore);
+                    [unownedSelf removeOperationFormMapWithUrl:obj.downloadUrl];
+                    UNLOCK(unownedSelf.operationSemaphore);
+                    ///async ？？？
+                    LOCK(unownedSelf.downloadResultCountSemaphore);
                     if (error) {
-                        unownedSelf.resultBlock(error, nil);
-                        //if need other process ???
-                        [unownedSelf removeOperationFormMapWithUrl:obj.downloadUrl];
-                        return;
+                        ///record download result count
+                        [unownedSelf acceptFileDownloadResult:NO];
                     }
-                    unownedSelf.resultBlock(nil, localPlayUrlString);
+                    else{
+                        [unownedSelf acceptFileDownloadResult:YES];
+                    }
+                    UNLOCK(unownedSelf.downloadResultCountSemaphore);
+                    [unownedSelf tryCallBack];
                 }];
-                [self.downloadQueue addOperation:operation];
+                [unownedSelf.downloadQueue addOperation:operation];
+                LOCK(unownedSelf.operationSemaphore);
                 [self.downloadOperationsMap setValue:operation forKey:obj.downloadUrl];
+                UNLOCK(unownedSelf.operationSemaphore);
             }];
         }];
     }
+    /// 目前没有重新发起的功能， 所以只会在这里设置execut
+    self.executing = YES;
 }
 
 - (void)cancel{
+    ///@synchronized (self) 内部是用递归锁实现的，可以嵌套使用
     @synchronized (self) {
+        if(self.finished) return;
+        [super cancel];
+        LOCK(_operationSemaphore);
         [self.plistInfo.fileInfos enumerateObjectsUsingBlock:^(BNM3U8fileInfo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             NSParameterAssert(obj.downloadUrl);
             BNM3U8FileDownLoadOperation *operation = [self.downloadOperationsMap valueForKey:obj.downloadUrl];
@@ -96,6 +119,11 @@
             //need to remove from map
             [self removeOperationFormMapWithUrl:obj.downloadUrl];
         }];
+        UNLOCK(_operationSemaphore);
+        [self tryCallBack];
+        if(self.executing) self.executing = NO;
+        if(!self.finished) self.finished = YES;
+        [self reset];
     }
 }
 
@@ -151,24 +179,40 @@
 - (void)removeOperationFormMapWithUrl:(NSString *)url
 {
     NSParameterAssert([self.downloadOperationsMap valueForKey:url]);
+    LOCK(_operationSemaphore);
     [self.downloadOperationsMap removeObjectForKey:url];
-    [self checkFinish];
+//    [self checkFinish];
+    UNLOCK(_operationSemaphore);
 }
 
-- (void)checkFinish
-{
-    if (self.downloadOperationsMap.count == 0) {
-        [self done];
-        return;
+- (void)acceptFileDownloadResult:(BOOL)success {
+    if (success) {
+        self.downloadSuccessCount += 1;
     }
-    BOOL unFinish = YES;
-    [self.downloadOperationsMap.allKeys enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        BNM3U8FileDownLoadOperation *operation = [self.downloadOperationsMap valueForKey:obj];
-        /////
-        if (operation.isFinished) {
-            
+    else{
+        self.downloadFailCount += 1;
+    }
+}
+
+- (void)tryCallBack
+{
+    LOCK(_downloadResultCountSemaphore);
+    BOOL finish = _downloadFailCount + _downloadFailCount == _plistInfo.fileInfos.count;
+    BOOL failed = _downloadFailCount > 0;
+    NSInteger failedCount = _downloadFailCount;
+    UNLOCK(_downloadResultCountSemaphore);
+    if (finish) {
+        [self done];
+        if (failed) {
+            ///存在文件下载失败
+            NSError *error = [NSError errorWithDomain:[NSString stringWithFormat:@"file download count is %ld",failedCount] code:100 userInfo:@{@"info":_plistInfo}];
+            if(_resultBlock) _resultBlock(error,nil);
         }
-    }];
+        else{
+            if(_resultBlock) _resultBlock(nil,@"local url");
+        }
+    }
+    UNLOCK(_downloadResultCountSemaphore);
 }
 
 @end

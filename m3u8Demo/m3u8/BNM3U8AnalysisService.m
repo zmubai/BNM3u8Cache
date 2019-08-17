@@ -9,10 +9,10 @@
 #import "BNM3U8AnalysisService.h"
 #import "NSString+m3u8.h"
 #import "BNM3U8PlistInfo.h"
+#import "BNM3U8PlistInfo.h"
 
-#import "ZBLM3u8Info.h"
-
-#import "ZBLM3u8Setting.h"
+//#import "ZBLM3u8Setting.h"
+#import "BNTool.h"
 #import "ZBLM3u8FileManager.h"
 
 /*解析m3u8 和组装m3u8*/
@@ -20,12 +20,19 @@
 //NSString * const ZBLM3u8AnalysiserResponeErrorDomain = @"error.m3u8.analysiser.respone";
 //NSString * const ZBLM3u8AnalysiserAnalysisErrorDomain = @"error.m3u8.analysiser.analysis";
 
-@implementation BNM3U8AnalysisService
+inline NSString *fullPerfixPath(NSString *rootPath,NSString *url){
+    return  [rootPath stringByAppendingPathComponent:[BNTool uuidWithUrl:url]];
+}
 
-+ (void)analysisWithURL:(NSString *)urlStr resultBlock:(BNM3U8AnalysisServiceResultBlock)resultBlock
+@implementation BNM3U8AnalysisService
++ (void)analysisWithURL:(NSString *)urlStr rootPath:(NSString *)rootPath resultBlock:(BNM3U8AnalysisServiceResultBlock)resultBlock
 {
     NSLog(@"analysis start");
-    NSString *oriM3u8String = [NSString stringWithContentsOfFile:[[ZBLM3u8Setting fullCommonDirPrefixWithUrl:urlStr] stringByAppendingPathComponent:[ZBLM3u8Setting oriM3u8InfoFileName]] encoding:0 error:nil];
+    
+    NSString *oriM3u8Path = [fullPerfixPath(rootPath,urlStr) stringByAppendingPathComponent:@"ori.m3u8"];
+    NSString *oriM3u8String = [NSString stringWithContentsOfFile:oriM3u8Path encoding:0 error:nil];
+    
+    //    NSString *oriM3u8String = [NSString stringWithContentsOfFile:[[ZBLM3u8Setting fullCommonDirPrefixWithUrl:urlStr] stringByAppendingPathComponent:[ZBLM3u8Setting oriM3u8InfoFileName]] encoding:0 error:nil];
     
     __block BOOL happenException = NO;
     if (oriM3u8String.length) {
@@ -34,7 +41,7 @@
             [self analysisWithOriUrlString:urlStr m3u8String:oriM3u8String resultBlock:resultBlock];
         } @catch (NSException *exception) {
             happenException = YES;
-            [[ZBLM3u8FileManager shareInstance]removeFileWithPath:[[ZBLM3u8Setting fullCommonDirPrefixWithUrl:urlStr] stringByAppendingPathComponent:[ZBLM3u8Setting oriM3u8InfoFileName]]];
+            [[ZBLM3u8FileManager shareInstance]removeFileWithPath:oriM3u8Path];
             resultBlock([[NSError alloc]initWithDomain:@"ZBLM3u8AnalysiserAnalysisErrorDomain" code:NSURLErrorUnknown userInfo:@{@"info":exception.reason}],nil);
         } @finally {
             
@@ -67,11 +74,12 @@
     } @finally {}
     
     if (!happenException) {
-        [[ZBLM3u8FileManager shareInstance]saveDate:[m3u8Str dataUsingEncoding:NSUTF8StringEncoding] ToFile:[[ZBLM3u8Setting fullCommonDirPrefixWithUrl:urlStr] stringByAppendingPathComponent:[ZBLM3u8Setting oriM3u8InfoFileName]] completaionHandler:nil];
+        /// save dst m3u8 info file
+        NSString *dstM3u8Path = [fullPerfixPath(rootPath,urlStr) stringByAppendingPathComponent:@"dst.m3u8"];
+        [[ZBLM3u8FileManager shareInstance]saveDate:[m3u8Str dataUsingEncoding:NSUTF8StringEncoding] ToFile:dstM3u8Path completaionHandler:nil];
     }
 }
 
-#pragma old
 + (void)analysisWithOriUrlString:(NSString*)OriUrlString m3u8String:(NSString*)m3u8String resultBlock:(BNM3U8AnalysisServiceResultBlock)resultBlock
 {
     /*
@@ -101,14 +109,16 @@
     
     NSMutableArray *fileInfos = @[].mutableCopy;
     if (info.keyUri.length > 0) {
+        //        info.keyLocalUri = [NSString stringWithFormat:@"%@/%@/%@",
+        //                            [ZBLM3u8Setting localHost],
+        //                            [ZBLM3u8Setting uuidWithUrl:OriUrlString],
+        //                            [ZBLM3u8Setting keyFileName]];
         ///加入到 fileInfos
-        info.keyLocalUri = [NSString stringWithFormat:@"%@/%@/%@",
-                            [ZBLM3u8Setting localHost],
-                            [ZBLM3u8Setting uuidWithUrl:OriUrlString],
-                            [ZBLM3u8Setting keyFileName]];
         BNM3U8fileInfo *fileInfo = [BNM3U8fileInfo new];
         fileInfo.oriUrlString = info.keyUri;
         fileInfo.index = - 1;
+        /* /md5(url)/keyName*/
+        fileInfo.relativeUrl =  [NSString stringWithFormat:@"/%@/key",[BNTool uuidWithUrl:OriUrlString]];
         [fileInfos addObject:fileInfo];
     }
     NSRange tsRange = [m3u8String rangeOfString:@"#EXTINF:"];
@@ -130,14 +140,13 @@
                 fileInfo.hasDiscontiunity = YES;
             }
             fileInfo.index = index ++;
+            /* /md5(url)/fileName*/
+            fileInfo.relativeUrl = [NSString stringWithFormat:@"/%@/%@.ts",[BNTool uuidWithUrl:OriUrlString],@(fileInfo.index)];
             ///该字段废弃，调试成功后，注释或删掉
-            fileInfo.localUrlString = [NSString stringWithFormat:@"%@/%@/%@",
-                                     [ZBLM3u8Setting localHost],
-                                     [ZBLM3u8Setting uuidWithUrl:OriUrlString],
-                                     [ZBLM3u8Setting tsFileWithIdentify:@(fileInfo.index).stringValue]];
-#warning TODO
-            ///该相对路径得填充
-            fileInfo.relativeUrl = @"";
+            //            fileInfo.localUrlString = [NSString stringWithFormat:@"%@/%@/%@",
+            //                                     [ZBLM3u8Setting localHost],
+            //                                     [ZBLM3u8Setting uuidWithUrl:OriUrlString],
+            //                                     [ZBLM3u8Setting tsFileWithIdentify:@(fileInfo.index).stringValue]];
             [fileInfos addObject:fileInfo];
             tsRange = [m3u8String rangeOfString:@"#EXTINF:"];
             if (tsRange.location != NSNotFound) {
@@ -151,7 +160,7 @@
     resultBlock(nil,info);
 }
 
-+ (NSString*)synthesisLocalM3u8Withm3u8Info:(ZBLM3u8Info *)m3u8Info
++ (NSString*)synthesisLocalM3u8Withm3u8Info:(BNM3U8PlistInfo *)m3u8Info
 {
     NSString *newM3u8String = @"";
     
@@ -166,17 +175,18 @@
         header = [header stringByAppendingString:[NSString stringWithFormat:@"#EXT-X-MEDIA-SEQUENCE:%ld\n",(long)m3u8Info.mediaSequence.integerValue]];
     }
     
-    NSString *keyStr = @"";
-    if(m3u8Info.keyUri.length)
-    {
-        keyStr = [NSString stringWithFormat:@"#EXT-X-KEY:METHOD=%@,URI=\"%@\",IV=%@\n",m3u8Info.keyMethod,m3u8Info.keyLocalUri,m3u8Info.keyIv];
-    }
-    
+    __block NSString *keyStr = @"";
     __block NSString *body = @"";
-    [m3u8Info.tsInfos enumerateObjectsUsingBlock:^(ZBLM3u8TsInfo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSString *tsInfo = [NSString stringWithFormat:@"#EXTINF:%.6lf,\n%@\n",obj.duration.floatValue,obj.localUrlString];
-        body =  [body stringByAppendingString:tsInfo];
-        if (obj.isHasDiscontiunity) body = [body stringByAppendingString:@"#EXT-X-DISCONTINUITY\n"];
+    
+    [m3u8Info.fileInfos enumerateObjectsUsingBlock:^(BNM3U8fileInfo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if(idx == -1 ){
+            keyStr = [NSString stringWithFormat:@"#EXT-X-KEY:METHOD=%@,URI=\"%@\",IV=%@\n",m3u8Info.keyMethod,obj.relativeUrl,m3u8Info.keyIv];
+        }
+        else{
+            NSString *tsInfo = [NSString stringWithFormat:@"#EXTINF:%.6lf,\n%@\n",obj.duration.floatValue,obj.relativeUrl];
+            body =  [body stringByAppendingString:tsInfo];
+            if (obj.isHasDiscontiunity) body = [body stringByAppendingString:@"#EXT-X-DISCONTINUITY\n"];
+        }
     }];
     
     newM3u8String = [[[[newM3u8String stringByAppendingString:header] stringByAppendingString:keyStr] stringByAppendingString:body] stringByAppendingString:@"#EXT-X-ENDLIST"];

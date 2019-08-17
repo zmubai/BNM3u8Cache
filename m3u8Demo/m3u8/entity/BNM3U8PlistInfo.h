@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///key
 @property (nonatomic, copy) NSString *keyMethod;
 @property (nonatomic, copy) NSString *keyUri;
-@property (nonatomic, copy) NSString *keyLocalUri;
+@property (nonatomic, copy) NSString *keyLocalUri;/// 废弃
 @property (nonatomic, copy) NSString *keyIv;
 ///contain the key file info if exit key.
 @property (nonatomic, strong) NSMutableArray <BNM3U8fileInfo*> *fileInfos;
