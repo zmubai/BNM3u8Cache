@@ -29,6 +29,7 @@
 @property (nonatomic, strong) dispatch_semaphore_t downloadResultCountSemaphore;
 @property (nonatomic, assign) NSInteger downloadSuccessCount;
 @property (nonatomic, assign) NSInteger downloadFailCount;
+@property (nonatomic, strong) AFURLSessionManager *sessionManager;
 @end
 
 @implementation BNM3U8DownloadOperation
@@ -36,19 +37,20 @@
 @synthesize executing = _executing;
 @synthesize finished = _finished;
 
-- (instancetype)initWithConfig:(BNM3U8DownloadConfig *)config downloadDstRootPath:(NSString *)path resultBlock:(BNM3U8DownloadOperationResultBlock)resultBlock{
+- (instancetype)initWithConfig:(BNM3U8DownloadConfig *)config downloadDstRootPath:(NSString *)path sessionManager:(AFURLSessionManager *)sessionManager resultBlock:(BNM3U8DownloadOperationResultBlock)resultBlock{
     NSParameterAssert(config);
     NSParameterAssert(path);
     self = [super init];
     if (self) {
-        self.config = config;
-        self.downloadDstRootPath = path;
-        self.resultBlock = resultBlock;
-        self.operationSemaphore = dispatch_semaphore_create(1);
-        self.downloadResultCountSemaphore = dispatch_semaphore_create(1);
-        self.downloadQueue = [[NSOperationQueue alloc]init];
-        self.downloadQueue.maxConcurrentOperationCount = self.config.maxConcurrenceCount;
-        self.downloadOperationsMap = NSMutableDictionary.new;
+        _config = config;
+        _downloadDstRootPath = path;
+        _resultBlock = resultBlock;
+        _operationSemaphore = dispatch_semaphore_create(1);
+        _downloadResultCountSemaphore = dispatch_semaphore_create(1);
+        _downloadQueue = [[NSOperationQueue alloc]init];
+        _downloadQueue.maxConcurrentOperationCount = self.config.maxConcurrenceCount;
+        _downloadOperationsMap = NSMutableDictionary.new;
+        _sessionManager = sessionManager;
     }
     return self;
 }
@@ -64,7 +66,7 @@
             return;
         }
         
-        __unsafe_unretained __typeof(self) unownedSelf = self;
+        __weak __typeof(self) weakSelf = self;
         
         //获取文本文件，发起下一级下载
         [BNM3U8AnalysisService analysisWithURL:_config.url  rootPath:_downloadDstRootPath  resultBlock:^(NSError * _Nullable error, BNM3U8PlistInfo * _Nullable plistInfo) {
@@ -78,27 +80,27 @@
             ///to download 发起下一级下载
             [plistInfo.fileInfos enumerateObjectsUsingBlock:^(BNM3U8fileInfo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 NSParameterAssert(obj.downloadUrl);
-                BNM3U8FileDownLoadOperation *operation = [[BNM3U8FileDownLoadOperation alloc]initWithFileInfo:obj resultBlock:^(NSError * _Nullable error) {
+                BNM3U8FileDownLoadOperation *operation = [[BNM3U8FileDownLoadOperation alloc]initWithFileInfo:obj sessionManager:self.sessionManager resultBlock:^(NSError * _Nullable error, id _Nullable info) {
                     /// remove from map
-                    LOCK(unownedSelf.operationSemaphore);
-                    [unownedSelf removeOperationFormMapWithUrl:obj.downloadUrl];
-                    UNLOCK(unownedSelf.operationSemaphore);
+                    LOCK(weakSelf.operationSemaphore);
+                    [weakSelf removeOperationFormMapWithUrl:obj.downloadUrl];
+                    UNLOCK(weakSelf.operationSemaphore);
                     ///async ？？？
-                    LOCK(unownedSelf.downloadResultCountSemaphore);
+                    LOCK(weakSelf.downloadResultCountSemaphore);
                     if (error) {
                         ///record download result count
-                        [unownedSelf acceptFileDownloadResult:NO];
+                        [weakSelf acceptFileDownloadResult:NO];
                     }
                     else{
-                        [unownedSelf acceptFileDownloadResult:YES];
+                        [weakSelf acceptFileDownloadResult:YES];
                     }
-                    UNLOCK(unownedSelf.downloadResultCountSemaphore);
-                    [unownedSelf tryCallBack];
+                    UNLOCK(weakSelf.downloadResultCountSemaphore);
+                    [weakSelf tryCallBack];
                 }];
-                [unownedSelf.downloadQueue addOperation:operation];
-                LOCK(unownedSelf.operationSemaphore);
+                [weakSelf.downloadQueue addOperation:operation];
+                LOCK(weakSelf.operationSemaphore);
                 [self.downloadOperationsMap setValue:operation forKey:obj.downloadUrl];
-                UNLOCK(unownedSelf.operationSemaphore);
+                UNLOCK(weakSelf.operationSemaphore);
             }];
         }];
     }
@@ -134,31 +136,20 @@
 }
 
 - (void)reset {
-//    LOCK(self.callbacksLock);
-//    [self.callbackBlocks removeAllObjects];
-//    UNLOCK(self.callbacksLock);
-//
-//    @synchronized (self) {
-//        self.dataTask = nil;
-//
+    LOCK(self.operationSemaphore);
+    [self.downloadOperationsMap removeAllObjects];
+    UNLOCK(self.operationSemaphore);
+
+    @synchronized (self) {
+        self.downloadSuccessCount = 0;
+        self.downloadFailCount = 0;
 //        if (self.ownedSession) {
 //            [self.ownedSession invalidateAndCancel];
 //            self.ownedSession =
 //            nil;
-//        }
-//
-//#if SD_UIKIT
-//        if (self.backgroundTaskId != UIBackgroundTaskInvalid) {
-//            // If backgroundTaskId != UIBackgroundTaskInvalid, sharedApplication is always exist
-//            UIApplication * app = [UIApplication performSelector:@selector(sharedApplication)];
-//            [app endBackgroundTask:self.backgroundTaskId];
-//            self.backgroundTaskId = UIBackgroundTaskInvalid;
-//        }
-//#endif
-//    }
+        }
 }
 
-#pragma mark - need to realize kvo
 - (void)setFinished:(BOOL)finished {
     [self willChangeValueForKey:@"isFinished"];
     _finished = finished;

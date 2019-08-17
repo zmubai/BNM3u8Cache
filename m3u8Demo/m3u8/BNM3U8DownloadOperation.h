@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "BNM3U8DownloadConfig.h"
-
+#import <AFURLSessionManager.h>
 NS_ASSUME_NONNULL_BEGIN
 
 
@@ -20,7 +20,7 @@ typedef void(^BNM3U8DownloadOperationResultBlock)( NSError * _Nullable error, NS
  上层使用NSOperationQueue去控制并发，全局控制
  */
 @interface BNM3U8DownloadOperation : NSOperation
-- (instancetype)initWithConfig:(BNM3U8DownloadConfig *)config downloadDstRootPath:(NSString *)path resultBlock:(BNM3U8DownloadOperationResultBlock)resultBlock;
+- (instancetype)initWithConfig:(BNM3U8DownloadConfig *)config downloadDstRootPath:(NSString *)path sessionManager:(AFURLSessionManager *)sessionManager resultBlock:(BNM3U8DownloadOperationResultBlock)resultBlock;
 @end
 
 NS_ASSUME_NONNULL_END

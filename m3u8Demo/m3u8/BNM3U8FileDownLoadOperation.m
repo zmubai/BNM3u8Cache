@@ -7,13 +7,15 @@
 //
 
 #import "BNM3U8FileDownLoadOperation.h"
-
+#import "ZBLM3u8FileManager.h"
 
 @interface BNM3U8FileDownLoadOperation ()
 @property (nonatomic, strong) NSObject <BNM3U8FileDownloadProtocol> *fileInfo;
 @property (nonatomic, strong) BNM3U8FileDownLoadOperationResultBlock resultBlock;
+@property (nonatomic, strong) AFURLSessionManager *sessionManager;
 @property (assign, nonatomic, getter = isExecuting) BOOL executing;
 @property (assign, nonatomic, getter = isFinished) BOOL finished;
+@property (nonatomic, strong) NSURLSessionDownloadTask *dataTask;
 @end
 
 @implementation BNM3U8FileDownLoadOperation
@@ -21,12 +23,13 @@
 @synthesize executing = _executing;
 @synthesize finished = _finished;
 
-- (instancetype)initWithFileInfo:(NSObject<BNM3U8FileDownloadProtocol> *)fileInfo  resultBlock:(BNM3U8FileDownLoadOperationResultBlock)resultBlock{
+- (instancetype)initWithFileInfo:(NSObject <BNM3U8FileDownloadProtocol> *)fileInfo sessionManager:(AFURLSessionManager*)sessionManager resultBlock:(BNM3U8FileDownLoadOperationResultBlock)resultBlock{
     NSParameterAssert(fileInfo);
     self = [super init];
     if (self) {
-        self.fileInfo = fileInfo;
-        self.resultBlock = resultBlock;
+        _fileInfo = fileInfo;
+        _resultBlock = resultBlock;
+        _sessionManager = sessionManager;
     }
     return self;
 }
@@ -42,11 +45,58 @@
             [self reset];
             return;
         }
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:_fileInfo.downloadUrl]];
+        __block NSData *data = nil;
+        __weak __typeof(self) weakSelf = self;
+        NSURLSessionDownloadTask *downloadTask = [self.sessionManager downloadTaskWithRequest:request progress:^(NSProgress * _Nonnull downloadProgress) {
+            NSLog(@"%@:%0.2lf%%\n",weakSelf.fileInfo.downloadUrl, (float)downloadProgress.completedUnitCount / (float)downloadProgress.totalUnitCount * 100);
+        } destination:^NSURL * _Nonnull(NSURL * _Nonnull targetPath, NSURLResponse * _Nonnull response) {
+            data = [NSData dataWithContentsOfURL:targetPath];
+            return nil;
+        } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
+            @synchronized (self) {
+                if (!error) {
+                    [weakSelf saveData:data];
+                }
+                else
+                {
+                    weakSelf.resultBlock(error,self.fileInfo);
+                    [self done];
+                }
+            }
+        }];
+        self.dataTask = downloadTask;
+        [downloadTask resume];
+        self.executing = YES;
     }
 }
 
+
+- (void)saveData:(NSData *)data
+{
+    [[ZBLM3u8FileManager shareInstance] saveDate:data ToFile:[_fileInfo dstFilePath] completaionHandler:^(NSError *error) {
+        @synchronized (self) {
+            if (!error) {
+                if(self.resultBlock) self.resultBlock(nil,self.fileInfo);
+            }
+            else
+            {
+                if(self.resultBlock) self.resultBlock(error, self.fileInfo);
+            }
+            [self done];
+        }
+    }];
+}
+
 - (void)cancel{
-    
+    @synchronized (self) {
+        if(self.isFinished) return;
+        [super cancel];
+        [self.dataTask cancel];
+        if (self.isExecuting) self.executing = NO;
+        if (!self.isFinished) self.finished = YES;
+        [self reset];
+    }
 }
 
 - (void)done {
@@ -56,28 +106,9 @@
 }
 
 - (void)reset {
-    //    LOCK(self.callbacksLock);
-    //    [self.callbackBlocks removeAllObjects];
-    //    UNLOCK(self.callbacksLock);
-    //
-    //    @synchronized (self) {
-    //        self.dataTask = nil;
-    //
-    //        if (self.ownedSession) {
-    //            [self.ownedSession invalidateAndCancel];
-    //            self.ownedSession =
-    //            nil;
-    //        }
-    //
-    //#if SD_UIKIT
-    //        if (self.backgroundTaskId != UIBackgroundTaskInvalid) {
-    //            // If backgroundTaskId != UIBackgroundTaskInvalid, sharedApplication is always exist
-    //            UIApplication * app = [UIApplication performSelector:@selector(sharedApplication)];
-    //            [app endBackgroundTask:self.backgroundTaskId];
-    //            self.backgroundTaskId = UIBackgroundTaskInvalid;
-    //        }
-    //#endif
-    //    }
+    @synchronized (self) {
+        self.dataTask = nil;
+    }
 }
 
 #pragma mark - need to realize kvo
