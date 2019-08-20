@@ -33,6 +33,11 @@ typedef  void(^BNM3U8DownloadResultBlock)(NSError * _Nullable error, NSString * 
 
 + (instancetype)shareInstanceWithConfig:(BNM3U8ManagerConfig*)config;
 
++ (instancetype)shareInstance;
+
+///不可以重新赋值
+- (void)fillConfig:(BNM3U8ManagerConfig*)config;
+
 /*下载队列中添加
  创建operation  添加到queue中。 系统控制执行
  */

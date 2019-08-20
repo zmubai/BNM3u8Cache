@@ -26,13 +26,26 @@
 
 @implementation BNM3U8Manager
 
-+ (instancetype)shareInstanceWithConfig:(BNM3U8ManagerConfig*)config
-{
+//+ (instancetype)shareInstanceWithConfig:(BNM3U8ManagerConfig*)config
+//{
+//    static BNM3U8Manager *manager;
+//    static dispatch_once_t onceToken;
+//    dispatch_once(&onceToken, ^{
+//        manager = BNM3U8Manager.new;
+//        manager.config = config;
+//        manager.operationSemaphore = dispatch_semaphore_create(1);
+//        manager.downloadQueue = [[NSOperationQueue alloc]init];
+//        manager.downloadQueue.maxConcurrentOperationCount = manager.config.videoMaxConcurrenceCount;
+//        manager.downloadOperationsMap = NSMutableDictionary.new;
+//    });
+//    return manager;
+//}
+
++ (instancetype)shareInstance{
     static BNM3U8Manager *manager;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         manager = BNM3U8Manager.new;
-        manager.config = config;
         manager.operationSemaphore = dispatch_semaphore_create(1);
         manager.downloadQueue = [[NSOperationQueue alloc]init];
         manager.downloadQueue.maxConcurrentOperationCount = manager.config.videoMaxConcurrenceCount;
@@ -41,6 +54,11 @@
     return manager;
 }
 
+- (void)fillConfig:(BNM3U8ManagerConfig*)config{
+    if (!_config) {
+        _config = config;
+    }
+}
 
 #pragma mark -
 - (void)downloadVideoWithConfig:(BNM3U8DownloadConfig *)config resultBlock:(BNM3U8DownloadResultBlock)resultBlock{

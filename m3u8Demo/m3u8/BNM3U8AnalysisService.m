@@ -18,7 +18,7 @@
 //NSString * const ZBLM3u8AnalysiserResponeErrorDomain = @"error.m3u8.analysiser.respone";
 //NSString * const ZBLM3u8AnalysiserAnalysisErrorDomain = @"error.m3u8.analysiser.analysis";
 
-inline NSString *fullPerfixPath(NSString *rootPath,NSString *url){
+NSString *fullPerfixPath(NSString *rootPath,NSString *url){
     return  [rootPath stringByAppendingPathComponent:[BNTool uuidWithUrl:url]];
 }
 
@@ -36,7 +36,7 @@ inline NSString *fullPerfixPath(NSString *rootPath,NSString *url){
     if (oriM3u8String.length) {
         NSLog(@"use local oriM3u8Info");
         @try {
-            [self analysisWithOriUrlString:urlStr m3u8String:oriM3u8String rootPath:rootPath resultBlock:resultBlock];
+            [BNM3U8AnalysisService analysisWithOriUrlString:urlStr m3u8String:oriM3u8String rootPath:rootPath resultBlock:resultBlock];
         } @catch (NSException *exception) {
             happenException = YES;
             [[ZBLM3u8FileManager shareInstance]removeFileWithPath:oriM3u8Path];
@@ -65,7 +65,7 @@ inline NSString *fullPerfixPath(NSString *rootPath,NSString *url){
             resultBlock([[NSError alloc]initWithDomain:@"ZBLM3u8AnalysiserResponeErrorDomain" code:NSURLErrorBadServerResponse userInfo:nil],nil);
             return;
         }
-        [self analysisWithOriUrlString:urlStr m3u8String:m3u8Str rootPath:rootPath resultBlock:resultBlock];
+        [BNM3U8AnalysisService analysisWithOriUrlString:urlStr m3u8String:m3u8Str rootPath:rootPath resultBlock:resultBlock];
     } @catch (NSException *exception) {
         happenException = YES;
         resultBlock([[NSError alloc]initWithDomain:@"ZBLM3u8AnalysiserAnalysisErrorDomain" code:NSURLErrorUnknown userInfo:@{@"info":exception.reason}],nil);
@@ -73,7 +73,7 @@ inline NSString *fullPerfixPath(NSString *rootPath,NSString *url){
     
     if (!happenException) {
         /// save dst m3u8 info file
-        NSString *dstM3u8Path = [fullPerfixPath(rootPath,urlStr) stringByAppendingPathComponent:@"dst.m3u8"];
+        NSString *dstM3u8Path = [fullPerfixPath(rootPath,urlStr) stringByAppendingPathComponent:@"local.m3u8"];
         [[ZBLM3u8FileManager shareInstance]saveDate:[m3u8Str dataUsingEncoding:NSUTF8StringEncoding] ToFile:dstM3u8Path completaionHandler:nil];
     }
 }

@@ -78,7 +78,6 @@
     }
 }
 
-
 - (void)saveData:(NSData *)data
 {
     [[ZBLM3u8FileManager shareInstance] saveDate:data ToFile:[_fileInfo dstFilePath] completaionHandler:^(NSError *error) {
