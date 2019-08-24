@@ -75,11 +75,12 @@ static int avCount = 0;
     self.progressView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 90, self.view.bounds.size.width, 40)];
     self.progressView.backgroundColor = [UIColor grayColor];
     [self.view addSubview:self.progressView];
-    self.urlArr = @[@"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_360_1000000.m3u8",
-                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_540_1500000.m3u8",
-                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_720_3000000.m3u8",
-                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_1080_5000000.m3u8"
-                    ].mutableCopy;
+//    self.urlArr = @[@"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_360_1000000.m3u8",
+//                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_540_1500000.m3u8",
+//                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_720_3000000.m3u8",
+//                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_1080_5000000.m3u8"
+//                    ].mutableCopy;
+    self.urlArr = @[@"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_360_1000000.m3u8"].mutableCopy;
     
     self.scrollView.contentSize = CGSizeMake(self.view. bounds.size.width, self.view.frame.size.width * 9.0 / 16.0 * self.urlArr.count);
     CGFloat width = 80.0f;
@@ -95,7 +96,9 @@ static int avCount = 0;
         dlConfig.maxConcurrenceCount = 1;
         dlConfig.localhost = @"http://127.0.0.1:8080";
         [BNM3U8Manager.shareInstance downloadVideoWithConfig:dlConfig resultBlock:^(NSError * _Nullable error, NSString * _Nullable relativeUrl) {
-            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                                    [self playWithUrlString:relativeUrl];
+                                });
         }];
 //        [[ZBLM3u8Manager shareInstance] downloadVideoWithUrlString:url downloadProgressHandler:^(float progress) {
 //            dispatch_async(dispatch_get_main_queue(), ^{

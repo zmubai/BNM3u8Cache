@@ -47,6 +47,8 @@
         _config = config;
         _downloadDstRootPath = path;
         _resultBlock = resultBlock;
+        _executing = NO;
+        _finished = NO;
         _operationSemaphore = dispatch_semaphore_create(1);
         _downloadResultCountSemaphore = dispatch_semaphore_create(1);
         _downloadQueue = [[NSOperationQueue alloc]init];
@@ -69,6 +71,13 @@
         }
         
         __weak __typeof(self) weakSelf = self;
+        
+        if (![self tryCreateRootDir]) {
+            NSError *error = [NSError errorWithDomain:@"创建文件目录失败" code:100 userInfo:nil];
+            self.resultBlock(error, nil);
+            [self done];
+            return;
+        }
         
         //获取文本文件，发起下一级下载
         [BNM3U8AnalysisService analysisWithURL:_config.url  rootPath:_downloadDstRootPath  resultBlock:^(NSError * _Nullable error, BNM3U8PlistInfo * _Nullable plistInfo) {
@@ -172,10 +181,7 @@
 - (void)removeOperationFormMapWithUrl:(NSString *)url
 {
     NSParameterAssert([self.downloadOperationsMap valueForKey:url]);
-    LOCK(_operationSemaphore);
     [self.downloadOperationsMap removeObjectForKey:url];
-    //    [self checkFinish];
-    UNLOCK(_operationSemaphore);
 }
 
 - (void)acceptFileDownloadResult:(BOOL)success {
@@ -190,30 +196,36 @@
 - (void)tryCallBack
 {
     LOCK(_downloadResultCountSemaphore);
-    BOOL finish = _downloadFailCount + _downloadFailCount == _plistInfo.fileInfos.count;
+    BOOL finish = _downloadSuccessCount + _downloadFailCount == _plistInfo.fileInfos.count;
     BOOL failed = _downloadFailCount > 0;
     NSInteger failedCount = _downloadFailCount;
     UNLOCK(_downloadResultCountSemaphore);
     if (finish) {
-        [self done];
         if (failed) {
             ///存在文件下载失败
             NSError *error = [NSError errorWithDomain:[NSString stringWithFormat:@"file download count is %ld",failedCount] code:100 userInfo:@{@"info":_plistInfo}];
             if(_resultBlock) _resultBlock(error,nil);
+            [self done];
         }
         else{
             NSString *m3u8String = [BNM3U8AnalysisService synthesisLocalM3u8Withm3u8Info:_plistInfo withLocaHost:self.config.localhost];
-            NSString *dstPath = [[_downloadDstRootPath stringByAppendingString:[BNTool uuidWithUrl:_config.url]]stringByAppendingPathComponent:@"local.m3u8"];
+            NSString *dstPath = [[_downloadDstRootPath stringByAppendingPathComponent:[BNTool uuidWithUrl:_config.url]]stringByAppendingPathComponent:@"dst.m3u8"];
             [[ZBLM3u8FileManager shareInstance]saveDate:[m3u8String dataUsingEncoding:NSUTF8StringEncoding] ToFile:dstPath completaionHandler:^(NSError *error) {
                 if (!error) {
-                    if(self.resultBlock) self.resultBlock(nil,[[self.config.localhost stringByAppendingString:[BNTool uuidWithUrl:self.config.url]]stringByAppendingPathComponent:@"local.m3u8"]);
+                    if(self.resultBlock) self.resultBlock(nil,[[self.config.localhost stringByAppendingString:[BNTool uuidWithUrl:self.config.url]]stringByAppendingPathComponent:@"dst.m3u8"]);
                 }
                 else{
                     if(self.resultBlock) self.resultBlock(error,nil);
                 }
+                [self done];
             }];
         }
     }
     UNLOCK(_downloadResultCountSemaphore);
+}
+
+- (BOOL)tryCreateRootDir
+{
+    return  [ZBLM3u8FileManager tryGreateDir:[self.downloadDstRootPath stringByAppendingPathComponent:[BNTool uuidWithUrl:self.config.url]]];
 }
 @end

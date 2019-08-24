@@ -118,7 +118,8 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
         /* /md5(url)/keyName*/
         fileInfo.relativeUrl =  [NSString stringWithFormat:@"/%@/key",[BNTool uuidWithUrl:OriUrlString]];
         [fileInfos addObject:fileInfo];
-        fileInfo.diskPath =  [NSString stringWithFormat:@"%@%@",fullPerfixPath(rootPath, OriUrlString),fileInfo.relativeUrl];
+        fileInfo.diskPath =  [NSString stringWithFormat:@"%@%@",rootPath,fileInfo.relativeUrl];
+        
     }
     NSRange tsRange = [m3u8String rangeOfString:@"#EXTINF:"];
     if (tsRange.location == NSNotFound) {
@@ -146,7 +147,7 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
             //                                     [ZBLM3u8Setting localHost],
             //                                     [ZBLM3u8Setting uuidWithUrl:OriUrlString],
             //                                     [ZBLM3u8Setting tsFileWithIdentify:@(fileInfo.index).stringValue]];
-            fileInfo.diskPath =  [NSString stringWithFormat:@"%@%@",fullPerfixPath(rootPath, OriUrlString),fileInfo.relativeUrl];
+            fileInfo.diskPath =  [NSString stringWithFormat:@"%@%@",rootPath,fileInfo.relativeUrl];
             [fileInfos addObject:fileInfo];
             tsRange = [m3u8String rangeOfString:@"#EXTINF:"];
             if (tsRange.location != NSNotFound) {

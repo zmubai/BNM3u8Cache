@@ -48,7 +48,6 @@
         manager = BNM3U8Manager.new;
         manager.operationSemaphore = dispatch_semaphore_create(1);
         manager.downloadQueue = [[NSOperationQueue alloc]init];
-        manager.downloadQueue.maxConcurrentOperationCount = manager.config.videoMaxConcurrenceCount;
         manager.downloadOperationsMap = NSMutableDictionary.new;
     });
     return manager;
@@ -57,6 +56,7 @@
 - (void)fillConfig:(BNM3U8ManagerConfig*)config{
     if (!_config) {
         _config = config;
+        _downloadQueue.maxConcurrentOperationCount = _config.videoMaxConcurrenceCount;
     }
 }
 
