@@ -80,14 +80,15 @@
 /*取消某个下载operation。找到对应的operation并 执行他的cannel方法，queue不提供对单个operation的取消处理，相应的queue提供全局的取消处理
  */
 - (void)cannel:(NSString *)url{
-    LOCK(_operationSemaphore);
     [self _cannel:url];
-    UNLOCK(_operationSemaphore);
 }
 
 ///unsafe thread
 - (void)_cannel:(NSString *)url{
+    LOCK(_operationSemaphore);
     BNM3U8DownloadOperation *operation = [_downloadOperationsMap valueForKey:url];
+    UNLOCK(_operationSemaphore);
+    if(!operation)return;
     NSParameterAssert(operation);
     if (!operation.isCancelled) {
 #pragma TODO:
@@ -95,22 +96,32 @@
         [operation cancel];
     }
     ///remove
+    LOCK(_operationSemaphore);
     [_downloadOperationsMap removeObjectForKey:url];
+    UNLOCK(_operationSemaphore);
 }
 
 /*全部取消,遍历operation cnnel. queue的cannel all operation 只能在创建/重新创建或者 dealloc时执行*/
 - (void)cancelAll{
     LOCK(_operationSemaphore);
     NSArray *urls = _downloadOperationsMap.allKeys;
+    UNLOCK(_operationSemaphore);
     [urls enumerateObjectsUsingBlock:^(NSString * _Nonnull url, NSUInteger idx, BOOL * _Nonnull stop) {
         [self _cannel:url];
     }];
-    UNLOCK(_operationSemaphore);
+    
 }
 
 /*queue 能实现，发起的不能挂起*/
 - (void)suspend{
-    _downloadQueue.suspended = YES;
+    _downloadQueue.suspended = !_downloadQueue.suspended;
+    LOCK(_operationSemaphore);
+    NSArray *urls = _downloadOperationsMap.allKeys;
+    [urls enumerateObjectsUsingBlock:^(NSString * _Nonnull url, NSUInteger idx, BOOL * _Nonnull stop) {
+        BNM3U8DownloadOperation *operation = [_downloadOperationsMap valueForKey:url];
+        operation.suspend = _downloadQueue.suspended;
+    }];
+    UNLOCK(_operationSemaphore);
 }
 
 - (AFURLSessionManager *)sessionManager

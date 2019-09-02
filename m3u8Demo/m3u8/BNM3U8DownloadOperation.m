@@ -10,7 +10,7 @@
 #import "BNM3U8AnalysisService.h"
 #import "BNM3U8PlistInfo.h"
 #import "BNM3U8FileDownLoadOperation.h"
-#import "ZBLM3u8FileManager.h"
+#import "BNFileManager.h"
 #import "BNTool.h"
 
 #define LOCK(lock) dispatch_semaphore_wait(lock, DISPATCH_TIME_FOREVER);
@@ -92,21 +92,22 @@
             [plistInfo.fileInfos enumerateObjectsUsingBlock:^(BNM3U8fileInfo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 NSParameterAssert(obj.downloadUrl);
                 BNM3U8FileDownLoadOperation *operation = [[BNM3U8FileDownLoadOperation alloc]initWithFileInfo:obj sessionManager:self.sessionManager resultBlock:^(NSError * _Nullable error, id _Nullable info) {
+                    __strong typeof(weakSelf) strongSelf = weakSelf;
                     /// remove from map
-                    LOCK(weakSelf.operationSemaphore);
-                    [weakSelf removeOperationFormMapWithUrl:obj.downloadUrl];
-                    UNLOCK(weakSelf.operationSemaphore);
+                    LOCK(self.operationSemaphore);
+                    [self removeOperationFormMapWithUrl:obj.downloadUrl];
+                    UNLOCK(self.operationSemaphore);
                     ///async ？？？
-                    LOCK(weakSelf.downloadResultCountSemaphore);
+                    LOCK(self.downloadResultCountSemaphore);
                     if (error) {
                         ///record download result count
-                        [weakSelf acceptFileDownloadResult:NO];
+                        [self acceptFileDownloadResult:NO];
                     }
                     else{
-                        [weakSelf acceptFileDownloadResult:YES];
+                        [self acceptFileDownloadResult:YES];
                     }
-                    UNLOCK(weakSelf.downloadResultCountSemaphore);
-                    [weakSelf tryCallBack];
+                    UNLOCK(self.downloadResultCountSemaphore);
+                    [self tryCallBack];
                 }];
                 [weakSelf.downloadQueue addOperation:operation];
                 LOCK(weakSelf.operationSemaphore);
@@ -125,13 +126,16 @@
         if(self.finished) return;
         [super cancel];
         LOCK(_operationSemaphore);
-        [self.plistInfo.fileInfos enumerateObjectsUsingBlock:^(BNM3U8fileInfo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        for (int idx = 0; idx < self.plistInfo.fileInfos.count; idx ++) {
+            BNM3U8fileInfo *obj = self.plistInfo.fileInfos[idx];
             NSParameterAssert(obj.downloadUrl);
             BNM3U8FileDownLoadOperation *operation = [self.downloadOperationsMap valueForKey:obj.downloadUrl];
             [operation cancel];
             //need to remove from map
-            [self removeOperationFormMapWithUrl:obj.downloadUrl];
-        }];
+            if (operation) {
+                //                [self removeOperationFormMapWithUrl:obj.downloadUrl];
+            }
+        }
         UNLOCK(_operationSemaphore);
         [self tryCallBack];
         if(self.executing) self.executing = NO;
@@ -180,8 +184,9 @@
 #pragma mark -
 - (void)removeOperationFormMapWithUrl:(NSString *)url
 {
-    NSParameterAssert([self.downloadOperationsMap valueForKey:url]);
-    [self.downloadOperationsMap removeObjectForKey:url];
+    if([self.downloadOperationsMap valueForKey:url]){
+        [self.downloadOperationsMap removeObjectForKey:url];
+    }
 }
 
 - (void)acceptFileDownloadResult:(BOOL)success {
@@ -210,9 +215,9 @@
         else{
             NSString *m3u8String = [BNM3U8AnalysisService synthesisLocalM3u8Withm3u8Info:_plistInfo withLocaHost:self.config.localhost];
             NSString *dstPath = [[_downloadDstRootPath stringByAppendingPathComponent:[BNTool uuidWithUrl:_config.url]]stringByAppendingPathComponent:@"dst.m3u8"];
-            [[ZBLM3u8FileManager shareInstance]saveDate:[m3u8String dataUsingEncoding:NSUTF8StringEncoding] ToFile:dstPath completaionHandler:^(NSError *error) {
+            [[BNFileManager shareInstance]saveDate:[m3u8String dataUsingEncoding:NSUTF8StringEncoding] ToFile:dstPath completaionHandler:^(NSError *error) {
                 if (!error) {
-                    if(self.resultBlock) self.resultBlock(nil,[[self.config.localhost stringByAppendingString:[BNTool uuidWithUrl:self.config.url]]stringByAppendingPathComponent:@"dst.m3u8"]);
+                    if(self.resultBlock) self.resultBlock(nil,[[self.config.localhost stringByAppendingPathComponent:[BNTool uuidWithUrl:self.config.url]]stringByAppendingPathComponent:@"dst.m3u8"]);
                 }
                 else{
                     if(self.resultBlock) self.resultBlock(error,nil);
@@ -226,6 +231,12 @@
 
 - (BOOL)tryCreateRootDir
 {
-    return  [ZBLM3u8FileManager tryGreateDir:[self.downloadDstRootPath stringByAppendingPathComponent:[BNTool uuidWithUrl:self.config.url]]];
+    return  [BNFileManager tryGreateDir:[self.downloadDstRootPath stringByAppendingPathComponent:[BNTool uuidWithUrl:self.config.url]]];
+}
+
+- (void)setSuspend:(BOOL)suspend
+{
+    _suspend = suspend;
+    _downloadQueue.suspended = _suspend;
 }
 @end

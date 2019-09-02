@@ -7,7 +7,7 @@
 //
 
 #import "BNM3U8FileDownLoadOperation.h"
-#import "ZBLM3u8FileManager.h"
+#import "BNFileManager.h"
 
 @interface BNM3U8FileDownLoadOperation ()
 @property (nonatomic, strong) NSObject <BNM3U8FileDownloadProtocol> *fileInfo;
@@ -46,7 +46,7 @@
             return;
         }
         ///file already exit
-        if([ZBLM3u8FileManager exitItemWithPath:_fileInfo.dstFilePath]){
+        if([BNFileManager exitItemWithPath:_fileInfo.dstFilePath]){
             _resultBlock(nil,_fileInfo);
             [self done];
             return;
@@ -80,7 +80,7 @@
 
 - (void)saveData:(NSData *)data
 {
-    [[ZBLM3u8FileManager shareInstance] saveDate:data ToFile:[_fileInfo dstFilePath] completaionHandler:^(NSError *error) {
+    [[BNFileManager shareInstance] saveDate:data ToFile:[_fileInfo dstFilePath] completaionHandler:^(NSError *error) {
         @synchronized (self) {
             if (!error) {
                 if(self.resultBlock) self.resultBlock(nil,self.fileInfo);

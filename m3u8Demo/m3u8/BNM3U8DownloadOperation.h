@@ -20,6 +20,7 @@ typedef void(^BNM3U8DownloadOperationResultBlock)( NSError * _Nullable error, NS
  上层使用NSOperationQueue去控制并发，全局控制
  */
 @interface BNM3U8DownloadOperation : NSOperation
+@property (nonatomic, assign) BOOL suspend;
 - (instancetype)initWithConfig:(BNM3U8DownloadConfig *)config downloadDstRootPath:(NSString *)path sessionManager:(AFURLSessionManager *)sessionManager resultBlock:(BNM3U8DownloadOperationResultBlock)resultBlock;
 @end
 

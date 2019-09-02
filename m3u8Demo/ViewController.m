@@ -10,6 +10,7 @@
 #import "BNM3U8Manager.h"
 #import <AVKit/AVKit.h>
 #import <AVFoundation/AVFoundation.h>
+#import "httpService/BNHttpLocalServer.h"
 
 @interface ViewController ()
 @property (strong, nonatomic) AVPlayer *player;
@@ -31,11 +32,15 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    NSString *rootPath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory,NSUserDomainMask,YES) objectAtIndex:0] stringByAppendingPathComponent:@"m3u8files"];
     BNM3U8ManagerConfig *config = BNM3U8ManagerConfig.new;
-    config.videoMaxConcurrenceCount = 2;
-    config.downloadDstRootPath =  [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory,NSUserDomainMask,YES) objectAtIndex:0] stringByAppendingPathComponent:@"m3u8files"];
+    config.videoMaxConcurrenceCount = 1;
+    config.downloadDstRootPath = rootPath;
     config.netOption = BNM3U8DownloadSupportNetOptionWifi;
     [[BNM3U8Manager shareInstance] fillConfig:config];
+    
+    BNHttpLocalServer.shareInstance.documentRoot = rootPath;
+    BNHttpLocalServer.shareInstance.port = 8080;
     
     self.scrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 100, self.view.bounds.size.width, self.view.bounds.size.height - 100)];
     [self.view addSubview:self.scrollView];
@@ -57,6 +62,12 @@
     [clearBtn setTitle:@"clearRootPath" forState:UIControlStateNormal];
     [clearBtn addTarget:self action:@selector(clearRootPath) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:clearBtn];
+    
+    UIButton *suspendBtn = [UIButton buttonWithType:UIButtonTypeSystem];
+    suspendBtn.frame = CGRectMake(80 + 65 + 100, 50, 120, 40);
+    [suspendBtn setTitle:@"suspend" forState:UIControlStateNormal];
+    [suspendBtn addTarget:self action:@selector(suspend) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:suspendBtn];
 }
 static int avCount = 0;
 - (void)start
@@ -75,12 +86,12 @@ static int avCount = 0;
     self.progressView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 90, self.view.bounds.size.width, 40)];
     self.progressView.backgroundColor = [UIColor grayColor];
     [self.view addSubview:self.progressView];
-//    self.urlArr = @[@"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_360_1000000.m3u8",
-//                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_540_1500000.m3u8",
-//                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_720_3000000.m3u8",
-//                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_1080_5000000.m3u8"
-//                    ].mutableCopy;
-    self.urlArr = @[@"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_360_1000000.m3u8"].mutableCopy;
+    self.urlArr = @[@"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_360_1000000.m3u8",
+                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_540_1500000.m3u8",
+                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_720_3000000.m3u8",
+                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_1080_5000000.m3u8"
+                    ].mutableCopy;
+//    self.urlArr = @[@"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_360_1000000.m3u8"].mutableCopy;
     
     self.scrollView.contentSize = CGSizeMake(self.view. bounds.size.width, self.view.frame.size.width * 9.0 / 16.0 * self.urlArr.count);
     CGFloat width = 80.0f;
@@ -93,25 +104,17 @@ static int avCount = 0;
         [self.progressView addSubview:label];
         BNM3U8DownloadConfig *dlConfig = BNM3U8DownloadConfig.new;
         dlConfig.url = url;
-        dlConfig.maxConcurrenceCount = 1;
+        dlConfig.maxConcurrenceCount = 5;
         dlConfig.localhost = @"http://127.0.0.1:8080";
         [BNM3U8Manager.shareInstance downloadVideoWithConfig:dlConfig resultBlock:^(NSError * _Nullable error, NSString * _Nullable relativeUrl) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                                    [self playWithUrlString:relativeUrl];
-                                });
+            if(relativeUrl)
+            {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [BNHttpLocalServer.shareInstance tryStart];
+                    [self playWithUrlString:relativeUrl];
+                });
+            }
         }];
-//        [[ZBLM3u8Manager shareInstance] downloadVideoWithUrlString:url downloadProgressHandler:^(float progress) {
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                label.text = [NSString stringWithFormat:@"%0.2f%%",progress * 100];
-//            });
-//        } downloadResultBlock:^(NSString * _Nonnull localPlayUrlString, NSError * _Nullable error) {
-//            if (!error) {
-//                [[ZBLM3u8Manager shareInstance]  tryStartLocalService];
-//                dispatch_async(dispatch_get_main_queue(), ^{
-//                    [self playWithUrlString:localPlayUrlString];
-//                });
-//            }
-//        }];
     }
 }
 
@@ -127,6 +130,10 @@ static int avCount = 0;
 - (void)clearRootPath
 {
 //    [[ZBLM3u8Manager shareInstance] clearRootFilePath];
+}
+
+- (void)suspend{
+    [BNM3U8Manager.shareInstance suspend];
 }
 
 

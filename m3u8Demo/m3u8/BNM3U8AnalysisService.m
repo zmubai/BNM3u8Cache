@@ -11,7 +11,7 @@
 #import "BNM3U8PlistInfo.h"
 #import "BNM3U8PlistInfo.h"
 #import "BNTool.h"
-#import "ZBLM3u8FileManager.h"
+#import "BNFileManager.h"
 
 /*解析m3u8 和组装m3u8*/
 
@@ -39,7 +39,7 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
             [BNM3U8AnalysisService analysisWithOriUrlString:urlStr m3u8String:oriM3u8String rootPath:rootPath resultBlock:resultBlock];
         } @catch (NSException *exception) {
             happenException = YES;
-            [[ZBLM3u8FileManager shareInstance]removeFileWithPath:oriM3u8Path];
+            [[BNFileManager shareInstance]removeFileWithPath:oriM3u8Path];
             resultBlock([[NSError alloc]initWithDomain:@"ZBLM3u8AnalysiserAnalysisErrorDomain" code:NSURLErrorUnknown userInfo:@{@"info":exception.reason}],nil);
         } @finally {
             
@@ -74,7 +74,7 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
     if (!happenException) {
         /// save dst m3u8 info file
         NSString *dstM3u8Path = [fullPerfixPath(rootPath,urlStr) stringByAppendingPathComponent:@"local.m3u8"];
-        [[ZBLM3u8FileManager shareInstance]saveDate:[m3u8Str dataUsingEncoding:NSUTF8StringEncoding] ToFile:dstM3u8Path completaionHandler:nil];
+        [[BNFileManager shareInstance]saveDate:[m3u8Str dataUsingEncoding:NSUTF8StringEncoding] ToFile:dstM3u8Path completaionHandler:nil];
     }
 }
 
