@@ -26,21 +26,6 @@
 
 @implementation BNM3U8Manager
 
-//+ (instancetype)shareInstanceWithConfig:(BNM3U8ManagerConfig*)config
-//{
-//    static BNM3U8Manager *manager;
-//    static dispatch_once_t onceToken;
-//    dispatch_once(&onceToken, ^{
-//        manager = BNM3U8Manager.new;
-//        manager.config = config;
-//        manager.operationSemaphore = dispatch_semaphore_create(1);
-//        manager.downloadQueue = [[NSOperationQueue alloc]init];
-//        manager.downloadQueue.maxConcurrentOperationCount = manager.config.videoMaxConcurrenceCount;
-//        manager.downloadOperationsMap = NSMutableDictionary.new;
-//    });
-//    return manager;
-//}
-
 + (instancetype)shareInstance{
     static BNM3U8Manager *manager;
     static dispatch_once_t onceToken;
@@ -58,13 +43,25 @@
         _config = config;
         _downloadQueue.maxConcurrentOperationCount = _config.videoMaxConcurrenceCount;
     }
+    else{
+        NSAssert(0, @"config不允许重新赋值");
+    }
 }
 
 #pragma mark -
-- (void)downloadVideoWithConfig:(BNM3U8DownloadConfig *)config resultBlock:(BNM3U8DownloadResultBlock)resultBlock{
+- (void)downloadVideoWithConfig:(BNM3U8DownloadConfig *)config progressBlock:(BNM3U8DownloadProgressBlock)progressBlock resultBlock:(BNM3U8DownloadResultBlock)resultBlock{
     NSParameterAssert(config.url);
+    LOCK(_operationSemaphore);
+    if([_downloadOperationsMap.allKeys containsObject:config.url]){
+        NSLog(@"任务已经存在！");
+        UNLOCK(_operationSemaphore);
+        return;
+    }
+    UNLOCK(_operationSemaphore);
     __weak __typeof(self) weakSelf= self;
-    BNM3U8DownloadOperation *operation =  [[BNM3U8DownloadOperation alloc]initWithConfig:config downloadDstRootPath:self.config.downloadDstRootPath sessionManager:self.sessionManager resultBlock:^(NSError * _Nullable error, NSString * _Nullable localPlayUrlString) {
+    BNM3U8DownloadOperation *operation =  [[BNM3U8DownloadOperation alloc]initWithConfig:config downloadDstRootPath:self.config.downloadDstRootPath sessionManager:self.sessionManager progressBlock:^(CGFloat progress) {
+        if(progressBlock) progressBlock(progress);
+    }resultBlock:^(NSError * _Nullable error, NSString * _Nullable localPlayUrlString) {
         ///下载回调
         if(resultBlock) resultBlock(error,localPlayUrlString);
         LOCK(weakSelf.operationSemaphore);
@@ -109,7 +106,6 @@
     [urls enumerateObjectsUsingBlock:^(NSString * _Nonnull url, NSUInteger idx, BOOL * _Nonnull stop) {
         [self _cannel:url];
     }];
-    
 }
 
 /*queue 能实现，发起的不能挂起*/
@@ -118,8 +114,8 @@
     LOCK(_operationSemaphore);
     NSArray *urls = _downloadOperationsMap.allKeys;
     [urls enumerateObjectsUsingBlock:^(NSString * _Nonnull url, NSUInteger idx, BOOL * _Nonnull stop) {
-        BNM3U8DownloadOperation *operation = [_downloadOperationsMap valueForKey:url];
-        operation.suspend = _downloadQueue.suspended;
+        BNM3U8DownloadOperation *operation = [self.downloadOperationsMap valueForKey:url];
+        operation.suspend = self.downloadQueue.suspended;
     }];
     UNLOCK(_operationSemaphore);
 }

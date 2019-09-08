@@ -22,12 +22,11 @@
 @property (nonatomic, strong) BNM3U8DownloadConfig *config;
 @property (nonatomic, copy) NSString *downloadDstRootPath;
 @property (nonatomic, copy) BNM3U8DownloadOperationResultBlock resultBlock;
-///不存在 cannel 单个文件 故不需要数组容器存储.但需要用来计算BNM3U8DownloadOperation 是否完成。或许用不上
+@property (nonatomic, copy) BNM3U8DownloadOperationProgressBlock progressBlock;
 @property (nonatomic, strong) NSMutableDictionary <NSString*,BNM3U8FileDownLoadOperation*> *downloadOperationsMap;
 @property (nonatomic, strong) BNM3U8PlistInfo *plistInfo;
 @property (nonatomic, strong) dispatch_semaphore_t operationSemaphore;
 @property (nonatomic, strong) NSOperationQueue *downloadQueue;
-///需要考虑 cannel 的情况
 @property (nonatomic, strong) dispatch_semaphore_t downloadResultCountSemaphore;
 @property (nonatomic, assign) NSInteger downloadSuccessCount;
 @property (nonatomic, assign) NSInteger downloadFailCount;
@@ -39,7 +38,7 @@
 @synthesize executing = _executing;
 @synthesize finished = _finished;
 
-- (instancetype)initWithConfig:(BNM3U8DownloadConfig *)config downloadDstRootPath:(NSString *)path sessionManager:(AFURLSessionManager *)sessionManager resultBlock:(BNM3U8DownloadOperationResultBlock)resultBlock{
+- (instancetype)initWithConfig:(BNM3U8DownloadConfig *)config downloadDstRootPath:(NSString *)path sessionManager:(AFURLSessionManager *)sessionManager progressBlock:(BNM3U8DownloadOperationProgressBlock)progressBlock resultBlock:(BNM3U8DownloadOperationResultBlock)resultBlock{
     NSParameterAssert(config);
     NSParameterAssert(path);
     self = [super init];
@@ -47,6 +46,7 @@
         _config = config;
         _downloadDstRootPath = path;
         _resultBlock = resultBlock;
+        _progressBlock = progressBlock;
         _executing = NO;
         _finished = NO;
         _operationSemaphore = dispatch_semaphore_create(1);
@@ -92,7 +92,6 @@
             [plistInfo.fileInfos enumerateObjectsUsingBlock:^(BNM3U8fileInfo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 NSParameterAssert(obj.downloadUrl);
                 BNM3U8FileDownLoadOperation *operation = [[BNM3U8FileDownLoadOperation alloc]initWithFileInfo:obj sessionManager:self.sessionManager resultBlock:^(NSError * _Nullable error, id _Nullable info) {
-                    __strong typeof(weakSelf) strongSelf = weakSelf;
                     /// remove from map
                     LOCK(self.operationSemaphore);
                     [self removeOperationFormMapWithUrl:obj.downloadUrl];
@@ -132,9 +131,7 @@
             BNM3U8FileDownLoadOperation *operation = [self.downloadOperationsMap valueForKey:obj.downloadUrl];
             [operation cancel];
             //need to remove from map
-            if (operation) {
-                //                [self removeOperationFormMapWithUrl:obj.downloadUrl];
-            }
+            [self removeOperationFormMapWithUrl:obj.downloadUrl];
         }
         UNLOCK(_operationSemaphore);
         [self tryCallBack];
@@ -158,10 +155,6 @@
     @synchronized (self) {
         self.downloadSuccessCount = 0;
         self.downloadFailCount = 0;
-        //        if (self.ownedSession) {
-        //            [self.ownedSession invalidateAndCancel];
-        //            self.ownedSession =
-        //            nil;
     }
 }
 
@@ -205,6 +198,7 @@
     BOOL failed = _downloadFailCount > 0;
     NSInteger failedCount = _downloadFailCount;
     UNLOCK(_downloadResultCountSemaphore);
+    if(self.progressBlock) _progressBlock(_downloadSuccessCount/(_plistInfo.fileInfos.count * 1.0));
     if (finish) {
         if (failed) {
             ///存在文件下载失败

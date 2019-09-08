@@ -15,9 +15,6 @@
 
 /*解析m3u8 和组装m3u8*/
 
-//NSString * const ZBLM3u8AnalysiserResponeErrorDomain = @"error.m3u8.analysiser.respone";
-//NSString * const ZBLM3u8AnalysiserAnalysisErrorDomain = @"error.m3u8.analysiser.analysis";
-
 NSString *fullPerfixPath(NSString *rootPath,NSString *url){
     return  [rootPath stringByAppendingPathComponent:[BNTool uuidWithUrl:url]];
 }
@@ -40,7 +37,7 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
         } @catch (NSException *exception) {
             happenException = YES;
             [[BNFileManager shareInstance]removeFileWithPath:oriM3u8Path];
-            resultBlock([[NSError alloc]initWithDomain:@"ZBLM3u8AnalysiserAnalysisErrorDomain" code:NSURLErrorUnknown userInfo:@{@"info":exception.reason}],nil);
+            resultBlock([[NSError alloc]initWithDomain:@"原始m3u8文本文件解析错误" code:NSURLErrorUnknown userInfo:@{@"info":exception.reason}],nil);
         } @finally {
             
         }
@@ -62,13 +59,13 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
         }
         if (m3u8Str.length == 0)
         {
-            resultBlock([[NSError alloc]initWithDomain:@"ZBLM3u8AnalysiserResponeErrorDomain" code:NSURLErrorBadServerResponse userInfo:nil],nil);
+            resultBlock([[NSError alloc]initWithDomain:@"原始m3u8文件内容为空" code:NSURLErrorBadServerResponse userInfo:nil],nil);
             return;
         }
         [BNM3U8AnalysisService analysisWithOriUrlString:urlStr m3u8String:m3u8Str rootPath:rootPath resultBlock:resultBlock];
     } @catch (NSException *exception) {
         happenException = YES;
-        resultBlock([[NSError alloc]initWithDomain:@"ZBLM3u8AnalysiserAnalysisErrorDomain" code:NSURLErrorUnknown userInfo:@{@"info":exception.reason}],nil);
+        resultBlock([[NSError alloc]initWithDomain:@"原始m3u8文本文件解析错误" code:NSURLErrorUnknown userInfo:@{@"info":exception.reason}],nil);
     } @finally {}
     
     if (!happenException) {
@@ -107,10 +104,6 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
     
     NSMutableArray *fileInfos = @[].mutableCopy;
     if (info.keyUri.length > 0) {
-        //        info.keyLocalUri = [NSString stringWithFormat:@"%@/%@/%@",
-        //                            [ZBLM3u8Setting localHost],
-        //                            [ZBLM3u8Setting uuidWithUrl:OriUrlString],
-        //                            [ZBLM3u8Setting keyFileName]];
         ///加入到 fileInfos
         BNM3U8fileInfo *fileInfo = [BNM3U8fileInfo new];
         fileInfo.oriUrlString = info.keyUri;
@@ -123,7 +116,7 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
     }
     NSRange tsRange = [m3u8String rangeOfString:@"#EXTINF:"];
     if (tsRange.location == NSNotFound) {
-        resultBlock([[NSError alloc]initWithDomain:@"ZBLM3u8AnalysiserAnalysisErrorDomain" code:NSURLErrorUnknown userInfo:@{@"info":@"none downloadUrl for .ts file"}],nil);
+        resultBlock([[NSError alloc]initWithDomain:@"没有找到.ts文件信息" code:NSURLErrorUnknown userInfo:@{@"info":@"none downloadUrl for .ts file"}],nil);
         return;
     }
     NSInteger index = 0;

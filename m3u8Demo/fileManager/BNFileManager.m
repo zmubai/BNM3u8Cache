@@ -15,7 +15,6 @@
 
 NSString * const BNFileManagerWriteErrorDomain = @"error.m3u8.fileManager.write";
 
-
 @implementation BNFileManager
 
 + (instancetype)shareInstance
@@ -24,8 +23,8 @@ NSString * const BNFileManagerWriteErrorDomain = @"error.m3u8.fileManager.write"
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedInstance = [[self alloc] init];
-        sharedInstance.ioQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0);
-        dispatch_sync(sharedInstance.ioQueue, ^{
+        sharedInstance.ioQueue = dispatch_queue_create("m3u8.write.serial.queue", DISPATCH_QUEUE_SERIAL);
+        dispatch_async(sharedInstance.ioQueue, ^{
             sharedInstance.fileManager = [NSFileManager new];
         });
     });
@@ -37,7 +36,7 @@ NSString * const BNFileManagerWriteErrorDomain = @"error.m3u8.fileManager.write"
     self = [super init];
     if (self) {
         _ioQueue = ioQueue != nil ? ioQueue : dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0);
-        dispatch_sync(_ioQueue, ^{
+        dispatch_async(_ioQueue, ^{
             self.fileManager = [NSFileManager new];
         });
     }
@@ -65,8 +64,7 @@ NSString * const BNFileManagerWriteErrorDomain = @"error.m3u8.fileManager.write"
 
 - (void)saveDate:(NSData*) aData pathUrl:(NSURL*)pathUrl completaionHandler:(BNFileManagerCompletaionHandler)completaionHandler
 {
-    dispatch_sync(_ioQueue, ^{
-        
+    dispatch_async(_ioQueue, ^{
         if ([aData writeToURL:pathUrl atomically:YES]) {
             if (completaionHandler) {
                 completaionHandler(nil);
@@ -82,7 +80,7 @@ NSString * const BNFileManagerWriteErrorDomain = @"error.m3u8.fileManager.write"
 }
 - (void)saveDate:(NSData*) aData ToFile:(NSString *)file completaionHandler:(BNFileManagerCompletaionHandler)completaionHandler
 {
-    dispatch_sync(_ioQueue, ^{
+    dispatch_async(_ioQueue, ^{
         if ([aData writeToFile:file atomically:YES]) {
             if (completaionHandler) {
                 completaionHandler(nil);
@@ -99,7 +97,7 @@ NSString * const BNFileManagerWriteErrorDomain = @"error.m3u8.fileManager.write"
 
 - (void)moveItemAtURL:(NSURL *)srcURL toURL:(NSURL *)dstURL completaionHandler:(BNFileManagerCompletaionHandler)completaionHandler
 {
-    dispatch_sync(_ioQueue, ^{
+    dispatch_async(_ioQueue, ^{
         NSError *error = nil;
         [self.fileManager moveItemAtURL:srcURL toURL:dstURL error:&error];
         if (completaionHandler) {
@@ -110,7 +108,7 @@ NSString * const BNFileManagerWriteErrorDomain = @"error.m3u8.fileManager.write"
 
 - (void)removeFileWithPath:(NSString *)path
 {
-    dispatch_sync(_ioQueue, ^{
+    dispatch_async(_ioQueue, ^{
         [self.fileManager removeItemAtPath:path error:nil];
     });
 }

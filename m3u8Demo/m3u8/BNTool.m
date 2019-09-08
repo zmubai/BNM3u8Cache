@@ -15,14 +15,4 @@
     return [Url md5];
 }
 
-+ (NSString *)fullCommonDirPrefixWithUrl:(NSString *)url rootPath:(NSString *)rootPath
-{
-    return [rootPath stringByAppendingPathComponent:[self uuidWithUrl:url]];
-}
-
-+ (NSString *)tsFileWithIdentify:(NSString *)identify;
-{
-    return [NSString stringWithFormat:@"%@.ts",identify];
-}
-
 @end

@@ -16,7 +16,6 @@
 		BB8E5D5522B3978A00623A0D /* BNM3U8Manager.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8E5D5422B3978A00623A0D /* BNM3U8Manager.m */; };
 		BB8E5D5922B3980E00623A0D /* BNM3U8DownloadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8E5D5822B3980E00623A0D /* BNM3U8DownloadOperation.m */; };
 		BB8E5D5C22B399A100623A0D /* BNM3U8AnalysisService.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8E5D5B22B399A100623A0D /* BNM3U8AnalysisService.m */; };
-		BB8E5D6722B39F1800623A0D /* BNM3U8FileService.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8E5D6622B39F1800623A0D /* BNM3U8FileService.m */; };
 		BB8E5D6A22B3A1A300623A0D /* BNM3U8FileDownLoadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8E5D6922B3A1A300623A0D /* BNM3U8FileDownLoadOperation.m */; };
 		BB8E5D6E22B3B0CB00623A0D /* BNM3U8PlistInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8E5D6D22B3B0CB00623A0D /* BNM3U8PlistInfo.m */; };
 		C8F5611942CE3A2D473D643F /* libPods-m3u8Demo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F4D184CCCEE792C0F627AFD1 /* libPods-m3u8Demo.a */; };
@@ -85,8 +84,6 @@
 		BB8E5D5A22B399A100623A0D /* BNM3U8AnalysisService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BNM3U8AnalysisService.h; sourceTree = "<group>"; };
 		BB8E5D5B22B399A100623A0D /* BNM3U8AnalysisService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BNM3U8AnalysisService.m; sourceTree = "<group>"; };
 		BB8E5D6422B39EDB00623A0D /* BNM3U8FileDownloadProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BNM3U8FileDownloadProtocol.h; sourceTree = "<group>"; };
-		BB8E5D6522B39F1800623A0D /* BNM3U8FileService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BNM3U8FileService.h; sourceTree = "<group>"; };
-		BB8E5D6622B39F1800623A0D /* BNM3U8FileService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BNM3U8FileService.m; sourceTree = "<group>"; };
 		BB8E5D6822B3A1A300623A0D /* BNM3U8FileDownLoadOperation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BNM3U8FileDownLoadOperation.h; sourceTree = "<group>"; };
 		BB8E5D6922B3A1A300623A0D /* BNM3U8FileDownLoadOperation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BNM3U8FileDownLoadOperation.m; sourceTree = "<group>"; };
 		BB8E5D6C22B3B0CB00623A0D /* BNM3U8PlistInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BNM3U8PlistInfo.h; sourceTree = "<group>"; };
@@ -235,8 +232,9 @@
 				BB8E5D3D22B3964D00623A0D /* ViewController.h */,
 				BB8E5D3E22B3964D00623A0D /* ViewController.m */,
 				DB842636231A0BB5009431F7 /* lib */,
-				DBAABB5F22F5662E00501D6A /* oldFile */,
+				DBAABB7422F5666400501D6A /* category */,
 				BB8E5D6B22B3A1B700623A0D /* httpService */,
+				DBAABB6622F5666300501D6A /* fileManager */,
 				BB8E5D5622B3979000623A0D /* m3u8 */,
 				BB8E5D4022B3964D00623A0D /* Main.storyboard */,
 				BB8E5D4322B3965000623A0D /* Assets.xcassets */,
@@ -250,7 +248,6 @@
 		BB8E5D5622B3979000623A0D /* m3u8 */ = {
 			isa = PBXGroup;
 			children = (
-				DBAABB6622F5666300501D6A /* fileManager */,
 				BB8E5D5322B3978A00623A0D /* BNM3U8Manager.h */,
 				BB8E5D5422B3978A00623A0D /* BNM3U8Manager.m */,
 				DB691DE522F532B100CEF3CE /* BNM3U8DownloadConfig.h */,
@@ -264,8 +261,6 @@
 				DBA71D0F23078EC00041D718 /* BNTool.h */,
 				DBA71D1023078EC00041D718 /* BNTool.m */,
 				BB8E5D5D22B39D4800623A0D /* entity */,
-				BB8E5D6522B39F1800623A0D /* BNM3U8FileService.h */,
-				BB8E5D6622B39F1800623A0D /* BNM3U8FileService.m */,
 			);
 			path = m3u8;
 			sourceTree = "<group>";
@@ -505,14 +500,6 @@
 			path = GCD;
 			sourceTree = "<group>";
 		};
-		DBAABB5F22F5662E00501D6A /* oldFile */ = {
-			isa = PBXGroup;
-			children = (
-				DBAABB7422F5666400501D6A /* category */,
-			);
-			path = oldFile;
-			sourceTree = "<group>";
-		};
 		DBAABB6622F5666300501D6A /* fileManager */ = {
 			isa = PBXGroup;
 			children = (
@@ -650,7 +637,6 @@
 				DB8426AE231A0BB6009431F7 /* HTTPDataResponse.m in Sources */,
 				DB8426BD231A0BB6009431F7 /* HTTPServer.m in Sources */,
 				DBAABB7F22F5666400501D6A /* NSString+m3u8.m in Sources */,
-				BB8E5D6722B39F1800623A0D /* BNM3U8FileService.m in Sources */,
 				DB8426AC231A0BB6009431F7 /* DDASLLogCapture.m in Sources */,
 				DB8426BB231A0BB6009431F7 /* DDData.m in Sources */,
 				DB8426B7231A0BB6009431F7 /* MultipartFormDataParser.m in Sources */,
@@ -827,7 +813,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 54JV57CX88;
+				DEVELOPMENT_TEAM = X9J773JQYX;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
@@ -851,7 +837,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 54JV57CX88;
+				DEVELOPMENT_TEAM = X9J773JQYX;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",

@@ -11,6 +11,7 @@
 #import <AVKit/AVKit.h>
 #import <AVFoundation/AVFoundation.h>
 #import "httpService/BNHttpLocalServer.h"
+#import "BNFileManager.h"
 
 @interface ViewController ()
 @property (strong, nonatomic) AVPlayer *player;
@@ -34,9 +35,10 @@
     
     NSString *rootPath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory,NSUserDomainMask,YES) objectAtIndex:0] stringByAppendingPathComponent:@"m3u8files"];
     BNM3U8ManagerConfig *config = BNM3U8ManagerConfig.new;
-    config.videoMaxConcurrenceCount = 1;
+    /*媒体下载并发数控制*/
+    config.videoMaxConcurrenceCount = 5;
     config.downloadDstRootPath = rootPath;
-    config.netOption = BNM3U8DownloadSupportNetOptionWifi;
+    //    config.netOption = BNM3U8DownloadSupportNetOptionWifi;
     [[BNM3U8Manager shareInstance] fillConfig:config];
     
     BNHttpLocalServer.shareInstance.documentRoot = rootPath;
@@ -91,7 +93,7 @@ static int avCount = 0;
                     @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_720_3000000.m3u8",
                     @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_1080_5000000.m3u8"
                     ].mutableCopy;
-//    self.urlArr = @[@"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_360_1000000.m3u8"].mutableCopy;
+    //    self.urlArr = @[@"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_360_1000000.m3u8"].mutableCopy;
     
     self.scrollView.contentSize = CGSizeMake(self.view. bounds.size.width, self.view.frame.size.width * 9.0 / 16.0 * self.urlArr.count);
     CGFloat width = 80.0f;
@@ -104,14 +106,19 @@ static int avCount = 0;
         [self.progressView addSubview:label];
         BNM3U8DownloadConfig *dlConfig = BNM3U8DownloadConfig.new;
         dlConfig.url = url;
+        /*单个媒体下载的文件并发数控制*/
         dlConfig.maxConcurrenceCount = 5;
         dlConfig.localhost = @"http://127.0.0.1:8080";
-        [BNM3U8Manager.shareInstance downloadVideoWithConfig:dlConfig resultBlock:^(NSError * _Nullable error, NSString * _Nullable relativeUrl) {
-            if(relativeUrl)
+        [BNM3U8Manager.shareInstance downloadVideoWithConfig:dlConfig progressBlock:^(CGFloat progress) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                label.text = [NSString stringWithFormat:@"%.00f%%",progress * 100];
+            });
+        }resultBlock:^(NSError * _Nullable error, NSString * _Nullable localPlayUrl) {
+            if(localPlayUrl)
             {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [BNHttpLocalServer.shareInstance tryStart];
-                    [self playWithUrlString:relativeUrl];
+                    [self playWithUrlString:localPlayUrl];
                 });
             }
         }];
@@ -120,16 +127,17 @@ static int avCount = 0;
 
 - (void)cannel
 {
-    for (NSInteger i = 0; i < self.urlArr.count ; i ++) {
-        [BNM3U8Manager.shareInstance  cannel:self.urlArr[i]];
-    }
+    //    for (NSInteger i = 0; i < self.urlArr.count ; i ++) {
+    //        [BNM3U8Manager.shareInstance  cannel:self.urlArr[i]];
+    //    }
     ///or  cancel all
-//    [BNM3U8Manager.shareInstance cancelAll];
+    [BNM3U8Manager.shareInstance cancelAll];
 }
 
 - (void)clearRootPath
 {
-//    [[ZBLM3u8Manager shareInstance] clearRootFilePath];
+    NSString *rootPath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory,NSUserDomainMask,YES) objectAtIndex:0] stringByAppendingPathComponent:@"m3u8files"];
+    [BNFileManager.shareInstance removeFileWithPath:rootPath];
 }
 
 - (void)suspend{
