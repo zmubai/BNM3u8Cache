@@ -108,7 +108,7 @@ static int avCount = 0;
         dlConfig.url = url;
         /*单个媒体下载的文件并发数控制*/
         dlConfig.maxConcurrenceCount = 5;
-        dlConfig.localhost = @"http://127.0.0.1:8080";
+        dlConfig.localhost = @"http://127.0.0.1:8080/";
         [BNM3U8Manager.shareInstance downloadVideoWithConfig:dlConfig progressBlock:^(CGFloat progress) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 label.text = [NSString stringWithFormat:@"%.00f%%",progress * 100];

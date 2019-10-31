@@ -211,7 +211,7 @@
             NSString *dstPath = [[_downloadDstRootPath stringByAppendingPathComponent:[BNTool uuidWithUrl:_config.url]]stringByAppendingPathComponent:@"dst.m3u8"];
             [[BNFileManager shareInstance]saveDate:[m3u8String dataUsingEncoding:NSUTF8StringEncoding] ToFile:dstPath completaionHandler:^(NSError *error) {
                 if (!error) {
-                    if(self.resultBlock) self.resultBlock(nil,[[self.config.localhost stringByAppendingPathComponent:[BNTool uuidWithUrl:self.config.url]]stringByAppendingPathComponent:@"dst.m3u8"]);
+                    if(self.resultBlock) self.resultBlock(nil,[[self.config.localhost stringByAppendingString:[BNTool uuidWithUrl:self.config.url]]stringByAppendingString:@"/dst.m3u8"]);
                 }
                 else{
                     if(self.resultBlock) self.resultBlock(error,nil);

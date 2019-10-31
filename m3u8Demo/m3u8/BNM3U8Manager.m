@@ -33,6 +33,7 @@
         manager = BNM3U8Manager.new;
         manager.operationSemaphore = dispatch_semaphore_create(1);
         manager.downloadQueue = [[NSOperationQueue alloc]init];
+        manager.downloadQueue.qualityOfService = NSQualityOfServiceUtility;
         manager.downloadOperationsMap = NSMutableDictionary.new;
     });
     return manager;

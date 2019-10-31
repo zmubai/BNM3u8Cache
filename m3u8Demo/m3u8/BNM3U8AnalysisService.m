@@ -134,13 +134,13 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
             }
             fileInfo.index = index ++;
             /* /md5(url)/fileName*/
-            fileInfo.relativeUrl = [NSString stringWithFormat:@"/%@/%@.ts",[BNTool uuidWithUrl:OriUrlString],@(fileInfo.index)];
+            fileInfo.relativeUrl = [NSString stringWithFormat:@"%@/%@.ts",[BNTool uuidWithUrl:OriUrlString],@(fileInfo.index)];
             ///该字段废弃，调试成功后，注释或删掉
             //            fileInfo.localUrlString = [NSString stringWithFormat:@"%@/%@/%@",
             //                                     [ZBLM3u8Setting localHost],
             //                                     [ZBLM3u8Setting uuidWithUrl:OriUrlString],
             //                                     [ZBLM3u8Setting tsFileWithIdentify:@(fileInfo.index).stringValue]];
-            fileInfo.diskPath =  [NSString stringWithFormat:@"%@%@",rootPath,fileInfo.relativeUrl];
+            fileInfo.diskPath =  [NSString stringWithFormat:@"%@/%@",rootPath,fileInfo.relativeUrl];
             [fileInfos addObject:fileInfo];
             tsRange = [m3u8String rangeOfString:@"#EXTINF:"];
             if (tsRange.location != NSNotFound) {
@@ -180,7 +180,7 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
             keyStr = [NSString stringWithFormat:@"#EXT-X-KEY:METHOD=%@,URI=\"%@\",IV=%@\n",m3u8Info.keyMethod,obj.relativeUrl,m3u8Info.keyIv];
         }
         else{
-            NSString *tsInfo = [NSString stringWithFormat:@"#EXTINF:%.6lf,\n%@\n",obj.duration.floatValue,[localhost stringByAppendingPathComponent:obj.relativeUrl]];
+            NSString *tsInfo = [NSString stringWithFormat:@"#EXTINF:%.6lf,\n%@\n",obj.duration.floatValue,[localhost stringByAppendingString:obj.relativeUrl]];
             body =  [body stringByAppendingString:tsInfo];
             if (obj.isHasDiscontiunity) body = [body stringByAppendingString:@"#EXT-X-DISCONTINUITY\n"];
         }
