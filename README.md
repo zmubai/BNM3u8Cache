@@ -5,7 +5,7 @@
 
 
 #### 使用方式
-```
+```Objective-C
     // 1.全局配置BNM3U8Manager
     NSString *rootPath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory,NSUserDomainMask,YES) objectAtIndex:0] stringByAppendingPathComponent:@"m3u8files"];
     BNM3U8ManagerConfig *config = BNM3U8ManagerConfig.new;
