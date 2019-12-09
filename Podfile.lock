@@ -14,17 +14,23 @@ PODS:
   - AFNetworking/Serialization (3.2.1)
   - AFNetworking/UIKit (3.2.1):
     - AFNetworking/NSURLSession
+  - GCDWebServer (3.5.3):
+    - GCDWebServer/Core (= 3.5.3)
+  - GCDWebServer/Core (3.5.3)
 
 DEPENDENCIES:
   - AFNetworking (~> 3.0)
+  - GCDWebServer (~> 3.5.3)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - AFNetworking
+    - GCDWebServer
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
+  GCDWebServer: c0ab22c73e1b84f358d1e2f74bf6afd1c60829f2
 
-PODFILE CHECKSUM: 1ddf533f96b694727dbc6315189ff53fd423c279
+PODFILE CHECKSUM: 0bff07b8163daefe754ff06019b6349494028fc0
 
-COCOAPODS: 1.5.2
+COCOAPODS: 1.5.3

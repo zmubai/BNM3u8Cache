@@ -10,5 +10,5 @@ target 'm3u8Demo' do
 
 
 pod 'AFNetworking', '~> 3.0'
-
+pod "GCDWebServer", "~> 3.5.3"
 end

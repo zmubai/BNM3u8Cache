@@ -135,11 +135,6 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
             fileInfo.index = index ++;
             /* /md5(url)/fileName*/
             fileInfo.relativeUrl = [NSString stringWithFormat:@"%@/%@.ts",[BNTool uuidWithUrl:OriUrlString],@(fileInfo.index)];
-            ///该字段废弃，调试成功后，注释或删掉
-            //            fileInfo.localUrlString = [NSString stringWithFormat:@"%@/%@/%@",
-            //                                     [ZBLM3u8Setting localHost],
-            //                                     [ZBLM3u8Setting uuidWithUrl:OriUrlString],
-            //                                     [ZBLM3u8Setting tsFileWithIdentify:@(fileInfo.index).stringValue]];
             fileInfo.diskPath =  [NSString stringWithFormat:@"%@/%@",rootPath,fileInfo.relativeUrl];
             [fileInfos addObject:fileInfo];
             tsRange = [m3u8String rangeOfString:@"#EXTINF:"];
