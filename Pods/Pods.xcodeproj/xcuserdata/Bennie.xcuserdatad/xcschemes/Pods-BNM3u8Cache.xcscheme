@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "000000000A90"
-               BuildableName = "libPods-m3u8Demo.a"
-               BlueprintName = "Pods-m3u8Demo"
+               BuildableName = "libPods-BNM3u8Cache.a"
+               BlueprintName = "Pods-BNM3u8Cache"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

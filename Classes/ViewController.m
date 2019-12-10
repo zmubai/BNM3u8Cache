@@ -10,7 +10,7 @@
 #import "BNM3U8Manager.h"
 #import <AVKit/AVKit.h>
 #import <AVFoundation/AVFoundation.h>
-#import "httpService/BNHttpLocalServer.h"
+#import "BNHttpLocalServer.h"
 #import "BNFileManager.h"
 
 @interface ViewController ()

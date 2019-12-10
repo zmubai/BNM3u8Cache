@@ -71,7 +71,7 @@
 		000000000A20 /* GCDWebServerFileResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = 0000000004D0 /* GCDWebServerFileResponse.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		000000000A30 /* GCDWebServerStreamedResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = 0000000004F0 /* GCDWebServerStreamedResponse.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		000000000A80 /* GCDWebServer-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 000000000A70 /* GCDWebServer-dummy.m */; };
-		000000000B90 /* Pods-m3u8Demo-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 000000000B80 /* Pods-m3u8Demo-dummy.m */; };
+		000000000B90 /* Pods-BNM3u8Cache-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 000000000B80 /* Pods-BNM3u8Cache-dummy.m */; };
 		000000000BC0 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 000000000BB0 /* SystemConfiguration.framework */; };
 		000000000BE0 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 000000000BD0 /* Security.framework */; };
 		000000000C00 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 000000000BF0 /* MobileCoreServices.framework */; };
@@ -169,14 +169,14 @@
 		000000000A50 /* GCDWebServer.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GCDWebServer.xcconfig; sourceTree = "<group>"; };
 		000000000A60 /* GCDWebServer-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "GCDWebServer-prefix.pch"; sourceTree = "<group>"; };
 		000000000A70 /* GCDWebServer-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "GCDWebServer-dummy.m"; sourceTree = "<group>"; };
-		000000000AD0 /* libPods-m3u8Demo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libPods-m3u8Demo.a"; path = "libPods-m3u8Demo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		000000000B20 /* Pods-m3u8Demo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-m3u8Demo.release.xcconfig"; sourceTree = "<group>"; };
-		000000000B30 /* Pods-m3u8Demo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-m3u8Demo.debug.xcconfig"; sourceTree = "<group>"; };
-		000000000B40 /* Pods-m3u8Demo-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-m3u8Demo-frameworks.sh"; sourceTree = "<group>"; };
-		000000000B50 /* Pods-m3u8Demo-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-m3u8Demo-resources.sh"; sourceTree = "<group>"; };
-		000000000B60 /* Pods-m3u8Demo-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-m3u8Demo-acknowledgements.plist"; sourceTree = "<group>"; };
-		000000000B70 /* Pods-m3u8Demo-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-m3u8Demo-acknowledgements.markdown"; sourceTree = "<group>"; };
-		000000000B80 /* Pods-m3u8Demo-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-m3u8Demo-dummy.m"; sourceTree = "<group>"; };
+		000000000AD0 /* libPods-BNM3u8Cache.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libPods-BNM3u8Cache.a"; path = "libPods-BNM3u8Cache.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		000000000B20 /* Pods-BNM3u8Cache.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-BNM3u8Cache.release.xcconfig"; sourceTree = "<group>"; };
+		000000000B30 /* Pods-BNM3u8Cache.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-BNM3u8Cache.debug.xcconfig"; sourceTree = "<group>"; };
+		000000000B40 /* Pods-BNM3u8Cache-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-BNM3u8Cache-frameworks.sh"; sourceTree = "<group>"; };
+		000000000B50 /* Pods-BNM3u8Cache-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-BNM3u8Cache-resources.sh"; sourceTree = "<group>"; };
+		000000000B60 /* Pods-BNM3u8Cache-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-BNM3u8Cache-acknowledgements.plist"; sourceTree = "<group>"; };
+		000000000B70 /* Pods-BNM3u8Cache-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-BNM3u8Cache-acknowledgements.markdown"; sourceTree = "<group>"; };
+		000000000B80 /* Pods-BNM3u8Cache-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-BNM3u8Cache-dummy.m"; sourceTree = "<group>"; };
 		000000000BB0 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.0.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
 		000000000BD0 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.0.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
 		000000000BF0 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.0.sdk/System/Library/Frameworks/MobileCoreServices.framework; sourceTree = DEVELOPER_DIR; };
@@ -231,7 +231,7 @@
 			children = (
 				000000000550 /* libAFNetworking.a */,
 				000000000840 /* libGCDWebServer.a */,
-				000000000AD0 /* libPods-m3u8Demo.a */,
+				000000000AD0 /* libPods-BNM3u8Cache.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -247,7 +247,7 @@
 		000000000070 /* Targets Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				000000000B10 /* Pods-m3u8Demo */,
+				000000000B10 /* Pods-BNM3u8Cache */,
 			);
 			name = "Targets Support Files";
 			sourceTree = "<group>";
@@ -411,19 +411,19 @@
 			path = "../Target Support Files/GCDWebServer";
 			sourceTree = "<group>";
 		};
-		000000000B10 /* Pods-m3u8Demo */ = {
+		000000000B10 /* Pods-BNM3u8Cache */ = {
 			isa = PBXGroup;
 			children = (
-				000000000B70 /* Pods-m3u8Demo-acknowledgements.markdown */,
-				000000000B60 /* Pods-m3u8Demo-acknowledgements.plist */,
-				000000000B80 /* Pods-m3u8Demo-dummy.m */,
-				000000000B40 /* Pods-m3u8Demo-frameworks.sh */,
-				000000000B50 /* Pods-m3u8Demo-resources.sh */,
-				000000000B30 /* Pods-m3u8Demo.debug.xcconfig */,
-				000000000B20 /* Pods-m3u8Demo.release.xcconfig */,
+				000000000B70 /* Pods-BNM3u8Cache-acknowledgements.markdown */,
+				000000000B60 /* Pods-BNM3u8Cache-acknowledgements.plist */,
+				000000000B80 /* Pods-BNM3u8Cache-dummy.m */,
+				000000000B40 /* Pods-BNM3u8Cache-frameworks.sh */,
+				000000000B50 /* Pods-BNM3u8Cache-resources.sh */,
+				000000000B30 /* Pods-BNM3u8Cache.debug.xcconfig */,
+				000000000B20 /* Pods-BNM3u8Cache.release.xcconfig */,
 			);
-			name = "Pods-m3u8Demo";
-			path = "Target Support Files/Pods-m3u8Demo";
+			name = "Pods-BNM3u8Cache";
+			path = "Target Support Files/Pods-BNM3u8Cache";
 			sourceTree = "<group>";
 		};
 		000000000BA0 /* iOS */ = {
@@ -533,9 +533,9 @@
 			productReference = 000000000840 /* libGCDWebServer.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		000000000A90 /* Pods-m3u8Demo */ = {
+		000000000A90 /* Pods-BNM3u8Cache */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 000000000AA0 /* Build configuration list for PBXNativeTarget "Pods-m3u8Demo" */;
+			buildConfigurationList = 000000000AA0 /* Build configuration list for PBXNativeTarget "Pods-BNM3u8Cache" */;
 			buildPhases = (
 				000000000AE0 /* Headers */,
 				000000000AF0 /* Sources */,
@@ -547,9 +547,9 @@
 				000000000C70 /* PBXTargetDependency */,
 				000000000C90 /* PBXTargetDependency */,
 			);
-			name = "Pods-m3u8Demo";
-			productName = "Pods-m3u8Demo";
-			productReference = 000000000AD0 /* libPods-m3u8Demo.a */;
+			name = "Pods-BNM3u8Cache";
+			productName = "Pods-BNM3u8Cache";
+			productReference = 000000000AD0 /* libPods-BNM3u8Cache.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -575,7 +575,7 @@
 			targets = (
 				000000000510 /* AFNetworking */,
 				000000000800 /* GCDWebServer */,
-				000000000A90 /* Pods-m3u8Demo */,
+				000000000A90 /* Pods-BNM3u8Cache */,
 			);
 		};
 /* End PBXProject section */
@@ -629,7 +629,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				000000000B90 /* Pods-m3u8Demo-dummy.m in Sources */,
+				000000000B90 /* Pods-BNM3u8Cache-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -875,7 +875,7 @@
 		};
 		000000000AB0 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 000000000B20 /* Pods-m3u8Demo.release.xcconfig */;
+			baseConfigurationReference = 000000000B20 /* Pods-BNM3u8Cache.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -897,7 +897,7 @@
 		};
 		000000000AC0 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 000000000B30 /* Pods-m3u8Demo.debug.xcconfig */;
+			baseConfigurationReference = 000000000B30 /* Pods-BNM3u8Cache.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -946,7 +946,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		000000000AA0 /* Build configuration list for PBXNativeTarget "Pods-m3u8Demo" */ = {
+		000000000AA0 /* Build configuration list for PBXNativeTarget "Pods-BNM3u8Cache" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				000000000AC0 /* Debug */,

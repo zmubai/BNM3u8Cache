@@ -5,7 +5,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 install! 'cocoapods', :deterministic_uuids => false
 inhibit_all_warnings!
 
-target 'm3u8Demo' do
+target 'BNM3u8Cache' do
 # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
 
 
