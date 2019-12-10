@@ -131,10 +131,13 @@ Pod::Spec.new do |s|
   #  where they will only apply to your library. If you depend on other Podspecs
   #  you can include multiple dependencies to ensure it works.
 
-  # s.requires_arc = true
+  s.requires_arc = true
 
   # s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
+  # s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SRCROOT)/AFNetworking" }
+  # s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SRCROOT)/GCDWebServer" }
+
   # s.dependency "JSONKit", "~> 1.4"
-  s.dependency "AFNetworking", "~> 3.0"
-  s.dependency "GCDWebServer", "~> 3.5.3"
+   # s.dependency "AFNetworking", "~> 3.0"
+   # s.dependency "GCDWebServer", "~> 3.5.3"
 end
