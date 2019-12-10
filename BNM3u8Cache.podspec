@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
 
   s.name         = "BNM3u8Cache"
   s.version      = "1.0.0"
-  s.summary      = "Implement m3u8 local caching and playback using operation. Can control the number of media concurrency, a single media file download concurrency;"
+  s.summary      = "Implement m3u8 local caching and playback using operation. "
 
   # This description is used to generate tags and improve search results.
   #   * Think: What does it do? Why did you write it? What is the focus?
@@ -90,7 +90,7 @@ Pod::Spec.new do |s|
   #  Not including the public_header_files will make all headers public.
   #
 
-  s.source_files  = "BNM3u8Cache/Classes/m3u8", "BNM3u8Cache/Classes/m3u8/**/*.{h,m}"
+  s.source_files  = "Classes/m3u8", "Classes/m3u8/**/*.{h,m}"
   s.exclude_files = "Classes/Exclude"
 
   # s.public_header_files = "Classes/**/*.h"
