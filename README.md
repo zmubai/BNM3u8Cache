@@ -1,5 +1,5 @@
 
-# M3U8DemoByOperation
+# BNM3u8Cache
 
 使用operation的方式实现m3u8本地缓存和播放。可控制媒体并发数，单个媒体文件下载并发数；支持任务挂起恢复、支持任务取消。
 
