@@ -22,7 +22,6 @@
 		DB691DE622F532B100CEF3CE /* BNM3U8DownloadConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = DB691DE422F532B100CEF3CE /* BNM3U8DownloadConfig.m */; };
 		DB7FDA48231D4B9E0059DDBD /* BNFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DB7FDA46231D4B9E0059DDBD /* BNFileManager.m */; };
 		DB8426D1231A0BD0009431F7 /* BNHttpLocalServer.m in Sources */ = {isa = PBXBuildFile; fileRef = DB8426D0231A0BD0009431F7 /* BNHttpLocalServer.m */; };
-		DB8426D2231A0D0C009431F7 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = DBAABC0422F566F000501D6A /* libxml2.tbd */; settings = {ATTRIBUTES = (Required, ); }; };
 		DBA71D1123078EC00041D718 /* BNTool.m in Sources */ = {isa = PBXBuildFile; fileRef = DBA71D1023078EC00041D718 /* BNTool.m */; };
 		DBAABB7F22F5666400501D6A /* NSString+m3u8.m in Sources */ = {isa = PBXBuildFile; fileRef = DBAABB7522F5666400501D6A /* NSString+m3u8.m */; };
 		DBAABC0822F56A0200501D6A /* BNM3U8fileInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DBAABC0722F56A0200501D6A /* BNM3U8fileInfo.m */; };
@@ -77,7 +76,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB8426D2231A0D0C009431F7 /* libxml2.tbd in Frameworks */,
 				16AA2BF327F8FF71B161CF49 /* libPods-BNM3u8Cache.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
