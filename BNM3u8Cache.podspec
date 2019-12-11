@@ -92,8 +92,8 @@ Pod::Spec.new do |s|
   #  Not including the public_header_files will make all headers public.
   #
 
-  s.source_files  = "Classes/m3u8", "Classes/m3u8/**/*.{h,m}"
-  s.exclude_files = "Classes/Exclude"
+  s.source_files  = "Classes/m3u8/*.{h,m}", "Classes/m3u8/**/*.{h,m}"
+  # s.exclude_files = "Classes/Exclude"
 
   s.public_header_files = "Classes/m3u8/*.h"
 
@@ -135,6 +135,6 @@ Pod::Spec.new do |s|
 
   s.xcconfig = { "HEADER_SEARCH_PATHS" => ["${PODS_ROOT}/AFNetworking/AFNetworking","${PODS_ROOT}/GCDWebServer/GCDWebServer/Core"] }
   # s.dependency "JSONKit", "~> 1.4"
-  s.dependency "AFNetworking", "~> 3.0"
-  s.dependency "GCDWebServer", "~> 3.5.3"
+   s.dependency "AFNetworking", "~> 3.0"
+   s.dependency "GCDWebServer", "~> 3.5.3"
 end
