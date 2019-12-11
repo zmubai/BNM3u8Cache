@@ -3,6 +3,19 @@
 
 使用operation的方式实现m3u8本地缓存和播放。可控制媒体并发数，单个媒体文件下载并发数；支持任务挂起恢复、支持任务取消。
 
+#### 使用cocoaPods安装
+
+首先在Podfild中添加以下内容并保存
+
+```ruby
+pod 'BNM3u8Cache'
+```
+
+然后命令行执行
+
+```bash
+$ pod install
+```
 
 #### 使用方式
 ```Objective-C
