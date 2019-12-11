@@ -68,7 +68,6 @@
 		DBAABC0622F56A0200501D6A /* BNM3U8fileInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BNM3U8fileInfo.h; sourceTree = "<group>"; };
 		DBAABC0722F56A0200501D6A /* BNM3U8fileInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BNM3U8fileInfo.m; sourceTree = "<group>"; };
 		EA5B6FE82DF078AD38AFDD47 /* Pods-m3u8Demo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-m3u8Demo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-m3u8Demo/Pods-m3u8Demo.debug.xcconfig"; sourceTree = "<group>"; };
-		F4D184CCCEE792C0F627AFD1 /* libPods-m3u8Demo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-m3u8Demo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,7 +86,6 @@
 			isa = PBXGroup;
 			children = (
 				DBAABC0422F566F000501D6A /* libxml2.tbd */,
-				F4D184CCCEE792C0F627AFD1 /* libPods-m3u8Demo.a */,
 				77F40A43F5AD920C1712CC19 /* libPods-BNM3u8Cache.a */,
 			);
 			name = Frameworks;

@@ -8,7 +8,6 @@
 
 #import "BNM3U8Manager.h"
 #import "BNM3U8DownloadOperation.h"
-//#import <AFURLSessionManager.h>
 #import "AFNetworking.h"
 
 #define LOCK(lock) dispatch_semaphore_wait(lock, DISPATCH_TIME_FOREVER);

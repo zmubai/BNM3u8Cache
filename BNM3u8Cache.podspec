@@ -93,7 +93,7 @@ Pod::Spec.new do |s|
   #
 
   s.source_files  = "Classes/m3u8/*.{h,m}", "Classes/m3u8/**/*.{h,m}"
-  s.exclude_files = "Classes/Exclude"
+  # s.exclude_files = "Classes/Exclude"
 
   # s.public_header_files = "Classes/**/*.h"
 
@@ -131,11 +131,11 @@ Pod::Spec.new do |s|
   #  where they will only apply to your library. If you depend on other Podspecs
   #  you can include multiple dependencies to ensure it works.
 
-  s.requires_arc = true
+  # s.requires_arc = true
 
-  s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(PODS_ROOT)/AFNetworking" }
-  s.xcconfig = { "FRAMEWORK_SEARCH_PATHS" => "$(PODS_ROOT)" }
-  # s.xcconfig = { "LIBRARY_SEARCH_PATHS" => "$(PODS_ROOT)/GCDWebServer" }
+  s.xcconfig = { "HEADER_SEARCH_PATHS" => "${PODS_ROOT}/Headers/Public/AFNetworking" }
+  # s.xcconfig = { "FRAMEWORK_SEARCH_PATHS" => "$(PODS_ROOT)" }
+  s.xcconfig = { "LIBRARY_SEARCH_PATHS" => "${$(PODS_ROOT)/AFNetworking" }
 
   # s.dependency "JSONKit", "~> 1.4"
    s.dependency "AFNetworking", "~> 3.0"
