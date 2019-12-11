@@ -133,8 +133,10 @@
 			children = (
 				BB6A6C8C23A085F6009BCE53 /* BNM3u8Cache.h */,
 				DBAABB7422F5666400501D6A /* category */,
-				BB8E5D6B22B3A1B700623A0D /* httpService */,
-				DBAABB6622F5666300501D6A /* fileManager */,
+				DB8426CF231A0BD0009431F7 /* BNHttpLocalServer.h */,
+				DB8426D0231A0BD0009431F7 /* BNHttpLocalServer.m */,
+				DB7FDA47231D4B9E0059DDBD /* BNFileManager.h */,
+				DB7FDA46231D4B9E0059DDBD /* BNFileManager.m */,
 				BB8E5D5322B3978A00623A0D /* BNM3U8Manager.h */,
 				BB8E5D5422B3978A00623A0D /* BNM3U8Manager.m */,
 				DB691DE522F532B100CEF3CE /* BNM3U8DownloadConfig.h */,
@@ -162,24 +164,6 @@
 				DBAABC0722F56A0200501D6A /* BNM3U8fileInfo.m */,
 			);
 			path = entity;
-			sourceTree = "<group>";
-		};
-		BB8E5D6B22B3A1B700623A0D /* httpService */ = {
-			isa = PBXGroup;
-			children = (
-				DB8426CF231A0BD0009431F7 /* BNHttpLocalServer.h */,
-				DB8426D0231A0BD0009431F7 /* BNHttpLocalServer.m */,
-			);
-			path = httpService;
-			sourceTree = "<group>";
-		};
-		DBAABB6622F5666300501D6A /* fileManager */ = {
-			isa = PBXGroup;
-			children = (
-				DB7FDA47231D4B9E0059DDBD /* BNFileManager.h */,
-				DB7FDA46231D4B9E0059DDBD /* BNFileManager.m */,
-			);
-			path = fileManager;
 			sourceTree = "<group>";
 		};
 		DBAABB7422F5666400501D6A /* category */ = {
