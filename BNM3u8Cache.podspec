@@ -133,10 +133,11 @@ Pod::Spec.new do |s|
 
   # s.requires_arc = true
 
-  s.xcconfig = { "HEADER_SEARCH_PATHS" => "${PODS_ROOT}/Headers/Public/AFNetworking" }
+  # s.xcconfig = { "HEADER_SEARCH_PATHS" => "${PODS_ROOT}/Headers/Public/AFNetworking" }
   # s.xcconfig = { "FRAMEWORK_SEARCH_PATHS" => "$(PODS_ROOT)" }
-  s.xcconfig = { "LIBRARY_SEARCH_PATHS" => "${$(PODS_ROOT)/AFNetworking" }
-
+  # s.xcconfig = { "LIBRARY_SEARCH_PATHS" => "${$(PODS_ROOT)/AFNetworking/AFNetworking/AFNetworking.h" }
+  s.xcconfig = {'HEADER_SEARCH_PATHS' => '$(PODS_ROOT)/AFNetworking/AFNetworking'}
+  # s.xcconfig = {'HEADER_SEARCH_PATHS' => '$(PODS_ROOT)/GCDWebServer/GCDWebServer/Core'}
   # s.dependency "JSONKit", "~> 1.4"
    s.dependency "AFNetworking", "~> 3.0"
    s.dependency "GCDWebServer", "~> 3.5.3"
