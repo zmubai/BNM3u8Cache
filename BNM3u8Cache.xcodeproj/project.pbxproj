@@ -132,7 +132,6 @@
 			isa = PBXGroup;
 			children = (
 				BB6A6C8C23A085F6009BCE53 /* BNM3u8Cache.h */,
-				DBAABB7422F5666400501D6A /* category */,
 				DB8426CF231A0BD0009431F7 /* BNHttpLocalServer.h */,
 				DB8426D0231A0BD0009431F7 /* BNHttpLocalServer.m */,
 				DB7FDA47231D4B9E0059DDBD /* BNFileManager.h */,
@@ -149,6 +148,7 @@
 				BB8E5D5B22B399A100623A0D /* BNM3U8AnalysisService.m */,
 				DBA71D0F23078EC00041D718 /* BNTool.h */,
 				DBA71D1023078EC00041D718 /* BNTool.m */,
+				DBAABB7422F5666400501D6A /* category */,
 				BB8E5D5D22B39D4800623A0D /* entity */,
 			);
 			path = m3u8;
