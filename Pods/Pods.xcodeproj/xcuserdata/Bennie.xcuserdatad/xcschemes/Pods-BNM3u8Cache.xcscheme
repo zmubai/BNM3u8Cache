@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0930"
+   LastUpgradeVersion = "1100"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "000000000A90"
+               BlueprintIdentifier = "8B4A8FAAEE9DD337EC3D21BC33C0BC8E"
                BuildableName = "libPods-BNM3u8Cache.a"
                BlueprintName = "Pods-BNM3u8Cache"
                ReferencedContainer = "container:Pods.xcodeproj">

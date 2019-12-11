@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "BNM3U8FileDownloadProtocol.h"
-#import <AFURLSessionManager.h>
+#import "AFNetworking.h"
 
 /* 一个 fileOperation 只负责下载一个文件*/
 NS_ASSUME_NONNULL_BEGIN

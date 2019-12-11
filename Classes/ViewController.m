@@ -7,11 +7,9 @@
 //
 
 #import "ViewController.h"
-#import "BNM3U8Manager.h"
 #import <AVKit/AVKit.h>
 #import <AVFoundation/AVFoundation.h>
-#import "BNHttpLocalServer.h"
-#import "BNFileManager.h"
+#import "BNM3u8Cache.h"
 
 @interface ViewController ()
 @property (strong, nonatomic) AVPlayer *player;

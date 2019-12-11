@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "BNM3U8DownloadConfig.h"
-#import <AFURLSessionManager.h>
+#import "AFNetworking.h"
 NS_ASSUME_NONNULL_BEGIN
 
 
