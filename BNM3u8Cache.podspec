@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "BNM3u8Cache"
-  s.version      = "1.0.0"
+  s.version      = "1.0.1"
   s.summary      = "Implement m3u8 local caching and playback using operation. "
 
   # This description is used to generate tags and improve search results.

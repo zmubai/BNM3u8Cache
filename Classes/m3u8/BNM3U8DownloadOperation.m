@@ -202,7 +202,7 @@
     if (finish) {
         if (failed) {
             ///存在文件下载失败
-            NSError *error = [NSError errorWithDomain:[NSString stringWithFormat:@"file download count is %ld",failedCount] code:100 userInfo:@{@"info":_plistInfo}];
+            NSError *error = [NSError errorWithDomain:[NSString stringWithFormat:@"file download count is %ld",failedCount] code:(NSInteger)100 userInfo:@{@"info":_plistInfo}];
             if(_resultBlock) _resultBlock(error,nil);
             [self done];
         }
