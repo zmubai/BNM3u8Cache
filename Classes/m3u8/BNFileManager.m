@@ -35,7 +35,7 @@ NSString * const BNFileManagerWriteErrorDomain = @"error.m3u8.fileManager.write"
 {
     self = [super init];
     if (self) {
-        _ioQueue = ioQueue != nil ? ioQueue : dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0);
+        _ioQueue = ioQueue != nil ? ioQueue : dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
         dispatch_async(_ioQueue, ^{
             self.fileManager = [NSFileManager new];
         });

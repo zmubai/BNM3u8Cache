@@ -12,7 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class BNM3U8PlistInfo;
 typedef  void(^BNM3U8AnalysisServiceResultBlock)(NSError * _Nullable error, BNM3U8PlistInfo * _Nullable plistInfo);
 @interface BNM3U8AnalysisService : NSObject
-//解析并生成本地地址
 + (void)analysisWithURL:(NSString *)url rootPath:(NSString *)rootPath resultBlock:(BNM3U8AnalysisServiceResultBlock)resultBlock;
 + (NSString*)synthesisLocalM3u8Withm3u8Info:(BNM3U8PlistInfo *)m3u8Info withLocaHost:(NSString *)localhost;
 @end

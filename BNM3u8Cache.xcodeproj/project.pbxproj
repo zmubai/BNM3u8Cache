@@ -22,7 +22,6 @@
 		DB691DE622F532B100CEF3CE /* BNM3U8DownloadConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = DB691DE422F532B100CEF3CE /* BNM3U8DownloadConfig.m */; };
 		DB7FDA48231D4B9E0059DDBD /* BNFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DB7FDA46231D4B9E0059DDBD /* BNFileManager.m */; };
 		DB8426D1231A0BD0009431F7 /* BNHttpLocalServer.m in Sources */ = {isa = PBXBuildFile; fileRef = DB8426D0231A0BD0009431F7 /* BNHttpLocalServer.m */; };
-		DBA71D1123078EC00041D718 /* BNTool.m in Sources */ = {isa = PBXBuildFile; fileRef = DBA71D1023078EC00041D718 /* BNTool.m */; };
 		DBAABB7F22F5666400501D6A /* NSString+m3u8.m in Sources */ = {isa = PBXBuildFile; fileRef = DBAABB7522F5666400501D6A /* NSString+m3u8.m */; };
 		DBAABC0822F56A0200501D6A /* BNM3U8fileInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DBAABC0722F56A0200501D6A /* BNM3U8fileInfo.m */; };
 /* End PBXBuildFile section */
@@ -61,8 +60,6 @@
 		DB7FDA47231D4B9E0059DDBD /* BNFileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BNFileManager.h; sourceTree = "<group>"; };
 		DB8426CF231A0BD0009431F7 /* BNHttpLocalServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BNHttpLocalServer.h; sourceTree = "<group>"; };
 		DB8426D0231A0BD0009431F7 /* BNHttpLocalServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BNHttpLocalServer.m; sourceTree = "<group>"; };
-		DBA71D0F23078EC00041D718 /* BNTool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BNTool.h; sourceTree = "<group>"; };
-		DBA71D1023078EC00041D718 /* BNTool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BNTool.m; sourceTree = "<group>"; };
 		DBAABB7522F5666400501D6A /* NSString+m3u8.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+m3u8.m"; sourceTree = "<group>"; };
 		DBAABB7622F5666400501D6A /* NSString+m3u8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+m3u8.h"; sourceTree = "<group>"; };
 		DBAABC0422F566F000501D6A /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
@@ -146,8 +143,6 @@
 				BB8E5D6922B3A1A300623A0D /* BNM3U8FileDownLoadOperation.m */,
 				BB8E5D5A22B399A100623A0D /* BNM3U8AnalysisService.h */,
 				BB8E5D5B22B399A100623A0D /* BNM3U8AnalysisService.m */,
-				DBA71D0F23078EC00041D718 /* BNTool.h */,
-				DBA71D1023078EC00041D718 /* BNTool.m */,
 				DBAABB7422F5666400501D6A /* category */,
 				BB8E5D5D22B39D4800623A0D /* entity */,
 			);
@@ -279,7 +274,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DB691DE622F532B100CEF3CE /* BNM3U8DownloadConfig.m in Sources */,
-				DBA71D1123078EC00041D718 /* BNTool.m in Sources */,
 				DB7FDA48231D4B9E0059DDBD /* BNFileManager.m in Sources */,
 				DBAABC0822F56A0200501D6A /* BNM3U8fileInfo.m in Sources */,
 				BB8E5D3F22B3964D00623A0D /* ViewController.m in Sources */,
@@ -435,7 +429,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = X9J773JQYX;
+				DEVELOPMENT_TEAM = B82BHJ5H89;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
@@ -460,7 +454,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = X9J773JQYX;
+				DEVELOPMENT_TEAM = B82BHJ5H89;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",

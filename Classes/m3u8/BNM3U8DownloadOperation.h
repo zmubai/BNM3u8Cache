@@ -20,8 +20,9 @@ typedef void(^BNM3U8DownloadOperationProgressBlock)(CGFloat progress);
  上层使用NSOperationQueue去控制并发，全局控制
  */
 @interface BNM3U8DownloadOperation : NSOperation
-@property (nonatomic, assign) BOOL suspend;
 - (instancetype)initWithConfig:(BNM3U8DownloadConfig *)config downloadDstRootPath:(NSString *)path sessionManager:(AFURLSessionManager *)sessionManager progressBlock:(BNM3U8DownloadOperationProgressBlock)progressBlock resultBlock:(BNM3U8DownloadOperationResultBlock)resultBlock;
+- (void)suspend;
+- (void)resume;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -6,6 +6,12 @@
 //  Copyright © 2019 Bennie. All rights reserved.
 //
 
+/*
+ cannel 之后只能通过downloadVideoWithConfig 重新发起
+ 
+ suspend 之后可以通过resume恢复，挂起的恢复下载。下载失败的不能恢复重新下载
+ 
+ **/
 #import <Foundation/Foundation.h>
 #import "BNM3U8DownloadOperation.h"
 
@@ -41,15 +47,13 @@ typedef void(^BNM3U8DownloadProgressBlock)(CGFloat progress);
  */
 - (void)downloadVideoWithConfig:(BNM3U8DownloadConfig *)config progressBlock:(BNM3U8DownloadProgressBlock)progressBlock resultBlock:(BNM3U8DownloadResultBlock)resultBlock;
 
-/*取消某个下载operation。找到对应的operation并 执行他的cannel方法
- */
 - (void)cannel:(NSString *)url;
 
-/*全部取消,遍历operation cnnel. queue的cannel all operation 只能在创建/重新创建或者 dealloc时执行*/
 - (void)cancelAll;
 
-/*已发起的不能挂起*/
 - (void)suspend;
+
+- (void)resume;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -13,13 +13,9 @@
 
 @interface ViewController ()
 @property (strong, nonatomic) AVPlayer *player;
-
 @property (strong, nonatomic) AVPlayerItem *playerItem;
-
 @property (strong, nonatomic) AVPlayerLayer *playerLayer;
-
 @property (strong, nonatomic) UIView *playerView;
-
 @property (strong, nonatomic) AVPlayerViewController *playerVC;
 @property (strong, nonatomic) UIScrollView *scrollView;
 @property (strong, nonatomic) UIScrollView *progressView;
@@ -30,7 +26,56 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"m3u8Demo";
+    [self configM3u8];
+    [self configUI];
+}
+
+- (void)configUI{
+    UIButton *clearBtn = [self btnWithTitle:@"清除文件" sel:@selector(clearRootPath)];
+    UIButton *startBtn = [self btnWithTitle:@"开始" sel:@selector(start)];
+    UIButton *cannelBtn = [self btnWithTitle:@"取消" sel:@selector(cannel)];
+
+    UIButton *suspendBtn = [self btnWithTitle:@"暂停" sel:@selector(suspend)];
+    UIButton *resumeBtn = [self btnWithTitle:@"恢复" sel:@selector(resume)];
+    CGFloat edge = 30;
+    CGFloat gap = 15;
+    CGFloat width  = 90;
+    CGFloat height = 30;
+    clearBtn.frame = CGRectMake(edge, edge * 2, width, height);
+    startBtn.frame = CGRectMake(edge + 1 * (width + gap), edge * 2, width, height);
+    cannelBtn.frame = CGRectMake(edge + 2 * (width + gap), edge * 2, width, height);
+    suspendBtn.frame = CGRectMake(edge + 0 * (width + gap), edge * 2 + 1 *(height + gap), width, height);
+    resumeBtn.frame = CGRectMake(edge + 1 * (width + gap), edge * 2 + 1 *(height + gap), width, height);
+    
+    self.progressView = [[UIScrollView alloc]initWithFrame:CGRectMake(edge, resumeBtn.frame.origin.y + resumeBtn.frame.size.height + gap, self.view.bounds.size.width - 2 * edge, height)];
+    self.progressView.backgroundColor = [UIColor grayColor];
+    [self.view addSubview:self.progressView];
+    
+    CGFloat y = self.progressView.frame.origin.y + self.progressView.frame.size.height + gap;
+    self.scrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(edge, y, self.view.bounds.size.width - 2 * edge, self.view.bounds.size.height - y)];
+    [self.view addSubview:self.scrollView];
+}
+
+- (void)resetProgressView {
+    CGRect frame = self.progressView.frame;
+    [self.progressView removeFromSuperview];
+    self.progressView = [[UIScrollView alloc]initWithFrame:frame];
+    self.progressView.backgroundColor = [UIColor grayColor];
+    [self.view addSubview:self.progressView];
+}
+
+- (UIButton *)btnWithTitle:(NSString *)title sel:(SEL)sel{
+    UIButton *btn = [UIButton buttonWithType:UIButtonTypeSystem];
+    [btn setTitle:title forState:UIControlStateNormal];
+    btn.titleLabel.font = [UIFont systemFontOfSize:15];
+    [btn setTitleColor:UIColor.blackColor forState:(UIControlStateNormal)];
+    [btn addTarget:self action:sel forControlEvents:UIControlEventTouchUpInside];
+    btn.backgroundColor = UIColor.grayColor;
+    [self.view addSubview:btn];
+    return btn;
+}
+
+- (void)configM3u8 {
     NSString *rootPath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory,NSUserDomainMask,YES) objectAtIndex:0] stringByAppendingPathComponent:@"m3u8files"];
     BNM3U8ManagerConfig *config = BNM3U8ManagerConfig.new;
     /*媒体下载并发数控制*/
@@ -40,67 +85,46 @@
     [[BNM3U8Manager shareInstance] fillConfig:config];
     
     BNHttpLocalServer.shareInstance.documentRoot = rootPath;
+    NSLog(@"rootPath:%@",rootPath);
     BNHttpLocalServer.shareInstance.port = 8080;
     
-    self.scrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 100, self.view.bounds.size.width, self.view.bounds.size.height - 100)];
-    [self.view addSubview:self.scrollView];
-    
-    UIButton *suspendBt = [UIButton buttonWithType:UIButtonTypeSystem];
-    suspendBt.frame = CGRectMake(15, 50, 60, 40);
-    [suspendBt setTitle:@"cannel" forState:UIControlStateNormal];
-    [suspendBt addTarget:self action:@selector(cannel) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:suspendBt];
-    
-    UIButton *resumeBt = [UIButton buttonWithType:UIButtonTypeSystem];
-    resumeBt.frame = CGRectMake(80, 50, 60, 40);
-    [resumeBt setTitle:@"start" forState:UIControlStateNormal];
-    [resumeBt addTarget:self action:@selector(start) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:resumeBt];
-    
-    UIButton *clearBtn = [UIButton buttonWithType:UIButtonTypeSystem];
-    clearBtn.frame = CGRectMake(80 + 65, 50, 120, 40);
-    [clearBtn setTitle:@"clearRootPath" forState:UIControlStateNormal];
-    [clearBtn addTarget:self action:@selector(clearRootPath) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:clearBtn];
-    
-    UIButton *suspendBtn = [UIButton buttonWithType:UIButtonTypeSystem];
-    suspendBtn.frame = CGRectMake(80 + 65 + 100, 50, 120, 40);
-    [suspendBtn setTitle:@"suspend" forState:UIControlStateNormal];
-    [suspendBtn addTarget:self action:@selector(suspend) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:suspendBtn];
+    /*
+     一些免费的m3u8链接【格式可能不兼容，需要分析处理】
+     https://bitmovin.com/mpeg-dash-hls-examples-sample-streams/
+     */
+    //    self.urlArr = @[@"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_360_1000000.m3u8",
+    //                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_540_1500000.m3u8",
+    //                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_720_3000000.m3u8",
+    //                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_1080_5000000.m3u8"
+    //    ].mutableCopy;
+    self.urlArr = @[@"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_360_1000000.m3u8",
+                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_540_1500000.m3u8"
+    ].mutableCopy;
 }
-static int avCount = 0;
+
 - (void)start
 {
-    avCount = 0;
     for (UIView *v  in self.scrollView.subviews) {
         if (v.tag == 555) {
             [v removeFromSuperview];
         }
     }
-    /*
-     一些免费的m3u8链接【格式可能不兼容，需要分析处理】
-     https://bitmovin.com/mpeg-dash-hls-examples-sample-streams/
-     */
-    [self.progressView removeFromSuperview];
-    self.progressView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 90, self.view.bounds.size.width, 40)];
-    self.progressView.backgroundColor = [UIColor grayColor];
-    [self.view addSubview:self.progressView];
-    self.urlArr = @[@"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_360_1000000.m3u8",
-                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_540_1500000.m3u8",
-                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_720_3000000.m3u8",
-                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_1080_5000000.m3u8"
-    ].mutableCopy;
-    //    self.urlArr = @[@"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_360_1000000.m3u8"].mutableCopy;
     
-    self.scrollView.contentSize = CGSizeMake(self.view. bounds.size.width, self.view.frame.size.width * 9.0 / 16.0 * self.urlArr.count);
-    CGFloat width = 80.0f;
-    self.progressView.contentSize = CGSizeMake(10 + width * self.urlArr.count, 0);
+    [self resetProgressView];
+    
+    CGFloat edge = 15;
+    CGFloat widht = self.view.frame.size.width - 2 * edge;
+    CGFloat gap = 15;
+    self.scrollView.contentSize = CGSizeMake(widht, (widht * 9.0 / 16.0  + gap) * self.urlArr.count);
+    CGFloat width = 75.0f;
+    self.progressView.contentSize = CGSizeMake(width * self.urlArr.count, 0);
     
     for (NSInteger i = 0; i < self.urlArr.count ; i ++) {
         NSString *url = self.urlArr[i];
         __block  UILabel *label = [UILabel new];
-        label.frame = CGRectMake(10 + width*i, 5, width, 40);
+        label.frame = CGRectMake(width * i, 0, width, self.progressView.frame.size.height);
+        label.font = [UIFont systemFontOfSize:15];
+        [label setTextAlignment:(NSTextAlignmentCenter)];
         [self.progressView addSubview:label];
         BNM3U8DownloadConfig *dlConfig = BNM3U8DownloadConfig.new;
         dlConfig.url = url;
@@ -116,8 +140,10 @@ static int avCount = 0;
             {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [BNHttpLocalServer.shareInstance tryStart];
-                    [self playWithUrlString:localPlayUrl];
+                    [self playWithUrlString:localPlayUrl idx:i];
                 });
+            } else {
+                NSLog(@"%@",error);
             }
         }];
     }
@@ -125,10 +151,6 @@ static int avCount = 0;
 
 - (void)cannel
 {
-    //    for (NSInteger i = 0; i < self.urlArr.count ; i ++) {
-    //        [BNM3U8Manager.shareInstance  cannel:self.urlArr[i]];
-    //    }
-    ///or  cancel all
     [BNM3U8Manager.shareInstance cancelAll];
 }
 
@@ -142,20 +164,24 @@ static int avCount = 0;
     [BNM3U8Manager.shareInstance suspend];
 }
 
+- (void)resume{
+    [BNM3U8Manager.shareInstance resume];
+}
 
-- (void)playWithUrlString:(NSString *)urlStr
+- (void)playWithUrlString:(NSString *)urlStr idx:(NSInteger)idx
 {
     self.playerItem = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:urlStr]];
     self.player = [[AVPlayer alloc] initWithPlayerItem:self.playerItem];
     self.playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.player];
-    self.playerLayer.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.width * 9.0 / 16.0);
-    self.playerView = [[UIView alloc] initWithFrame:CGRectMake(0, 20 + avCount * CGRectGetHeight(self.playerLayer.frame), CGRectGetWidth(self.playerLayer.frame), CGRectGetHeight(self.playerLayer.frame))];
+    CGFloat width = self.scrollView.frame.size.width;
+    CGFloat gap = 15;
+    self.playerLayer.frame = CGRectMake(0, 0, width, width * 9.0 / 16.0);
+    self.playerView = [[UIView alloc] initWithFrame:CGRectMake(0, idx * (gap + CGRectGetHeight(self.playerLayer.frame)) , CGRectGetWidth(self.playerLayer.frame), CGRectGetHeight(self.playerLayer.frame))];
     self.playerView.tag = 555;
     self.playerView.backgroundColor = [UIColor blackColor];
     [self.playerView.layer addSublayer:self.playerLayer];
     [self.scrollView addSubview:self.playerView];
     [self.player play];
-    avCount ++;
 }
 
 - (void)didReceiveMemoryWarning {

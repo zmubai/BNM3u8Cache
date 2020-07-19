@@ -37,8 +37,6 @@
 #pragma mark -
 - (void)start
 {
-    ///加入到 operationqueue 中是否 会在异步线程发起？  推测应该是的，待测试后确认
-    //实现
     @synchronized (self) {
         if (self.isCancelled) {
             self.finished = YES;
@@ -56,12 +54,13 @@
         __block NSData *data = nil;
         __weak __typeof(self) weakSelf = self;
         NSURLSessionDownloadTask *downloadTask = [self.sessionManager downloadTaskWithRequest:request progress:^(NSProgress * _Nonnull downloadProgress) {
+#if DEBUG
             NSLog(@"%@:%0.2lf%%\n",weakSelf.fileInfo.downloadUrl, (float)downloadProgress.completedUnitCount / (float)downloadProgress.totalUnitCount * 100);
+#endif
         } destination:^NSURL * _Nonnull(NSURL * _Nonnull targetPath, NSURLResponse * _Nonnull response) {
             data = [NSData dataWithContentsOfURL:targetPath];
             return nil;
         } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
-            @synchronized (self) {
                 if (!error) {
                     [weakSelf saveData:data];
                 }
@@ -70,28 +69,11 @@
                     weakSelf.resultBlock(error,self.fileInfo);
                     [self done];
                 }
-            }
         }];
         self.dataTask = downloadTask;
         [downloadTask resume];
         self.executing = YES;
     }
-}
-
-- (void)saveData:(NSData *)data
-{
-    [[BNFileManager shareInstance] saveDate:data ToFile:[_fileInfo dstFilePath] completaionHandler:^(NSError *error) {
-        @synchronized (self) {
-            if (!error) {
-                if(self.resultBlock) self.resultBlock(nil,self.fileInfo);
-            }
-            else
-            {
-                if(self.resultBlock) self.resultBlock(error, self.fileInfo);
-            }
-            [self done];
-        }
-    }];
 }
 
 - (void)cancel{
@@ -105,6 +87,7 @@
     }
 }
 
+#pragma mark -
 - (void)done {
     self.finished = YES;
     self.executing = NO;
@@ -117,7 +100,29 @@
     }
 }
 
-#pragma mark - need to realize kvo
+- (void)saveData:(NSData *)data
+{
+    [[BNFileManager shareInstance] saveDate:data ToFile:[_fileInfo dstFilePath] completaionHandler:^(NSError *error) {
+            if(self.resultBlock) self.resultBlock(error, self.fileInfo);
+            [self done];
+    }];
+}
+
+- (void)suspend {
+    @synchronized (self) {
+        [self.dataTask suspend];
+        NSLog(@"[self.dataTask suspend]");
+    }
+}
+
+- (void)resume {
+    @synchronized (self) {
+        [self.dataTask resume];
+        NSLog(@"[self.dataTask resume]");
+    }
+}
+
+#pragma mark -
 - (void)setFinished:(BOOL)finished {
     [self willChangeValueForKey:@"isFinished"];
     _finished = finished;

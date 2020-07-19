@@ -10,13 +10,12 @@
 #import "NSString+m3u8.h"
 #import "BNM3U8PlistInfo.h"
 #import "BNM3U8PlistInfo.h"
-#import "BNTool.h"
 #import "BNFileManager.h"
 
 /*解析m3u8 和组装m3u8*/
 
 NSString *fullPerfixPath(NSString *rootPath,NSString *url){
-    return  [rootPath stringByAppendingPathComponent:[BNTool uuidWithUrl:url]];
+    return  [rootPath stringByAppendingPathComponent:[url md5]];
 }
 
 @implementation BNM3U8AnalysisService
@@ -109,7 +108,7 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
         fileInfo.oriUrlString = info.keyUri;
         fileInfo.index = - 1;
         /* /md5(url)/keyName*/
-        fileInfo.relativeUrl =  [NSString stringWithFormat:@"/%@/key",[BNTool uuidWithUrl:OriUrlString]];
+        fileInfo.relativeUrl =  [NSString stringWithFormat:@"/%@/key",[OriUrlString md5]];
         [fileInfos addObject:fileInfo];
         fileInfo.diskPath =  [NSString stringWithFormat:@"%@%@",rootPath,fileInfo.relativeUrl];
         
@@ -134,7 +133,7 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
             }
             fileInfo.index = index ++;
             /* /md5(url)/fileName*/
-            fileInfo.relativeUrl = [NSString stringWithFormat:@"%@/%@.ts",[BNTool uuidWithUrl:OriUrlString],@(fileInfo.index)];
+            fileInfo.relativeUrl = [NSString stringWithFormat:@"%@/%@.ts",[OriUrlString md5],@(fileInfo.index)];
             fileInfo.diskPath =  [NSString stringWithFormat:@"%@/%@",rootPath,fileInfo.relativeUrl];
             [fileInfos addObject:fileInfo];
             tsRange = [m3u8String rangeOfString:@"#EXTINF:"];

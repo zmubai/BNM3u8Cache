@@ -30,6 +30,7 @@
     @synchronized (self) {
         if(!_webServer){
             _webServer = [[GCDWebServer alloc] init];
+            [GCDWebServer setLogLevel:4];
             [_webServer addGETHandlerForBasePath:@"/" directoryPath:[_documentRoot stringByAppendingString:@"/"] indexFilename:nil cacheAge:INT_MAX allowRangeRequests:YES];
             [_webServer startWithPort:8080 bonjourName:nil];
         } else if (![_webServer isRunning]) {
