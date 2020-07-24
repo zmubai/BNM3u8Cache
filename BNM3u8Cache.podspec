@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "BNM3u8Cache"
-  s.version      = "1.0.2"
+  s.version      = "1.1.0"
   s.summary      = "a m3u8 downloader"
 
   # This description is used to generate tags and improve search results.
