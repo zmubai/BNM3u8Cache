@@ -2,8 +2,8 @@
 //  BNM3U8DownloadOperation.m
 //  m3u8Demo
 //
-//  Created by Bennie on 6/14/19.
-//  Copyright © 2019 Bennie. All rights reserved.
+//  Created by liangzeng on 6/14/19.
+//  Copyright © 2019 liangzeng. All rights reserved.
 //
 
 #import "BNM3U8DownloadOperation.h"
@@ -17,8 +17,10 @@
 #define UNLOCK(lock) dispatch_semaphore_signal(lock);
 
 @interface BNM3U8DownloadOperation ()
+@property (assign, nonatomic, getter = isCancelled) BOOL cancelled;
 @property (assign, nonatomic, getter = isExecuting) BOOL executing;
 @property (assign, nonatomic, getter = isFinished) BOOL finished;
+@property (assign, nonatomic, getter = isSuspend) BOOL suspend;// suspend 和 resume 方法所影响
 @property (nonatomic, strong) BNM3U8DownloadConfig *config;
 @property (nonatomic, copy) NSString *downloadDstRootPath;
 @property (nonatomic, copy) BNM3U8DownloadOperationResultBlock resultBlock;
@@ -34,9 +36,11 @@
 @end
 
 @implementation BNM3U8DownloadOperation
-///告诉编译器合成get set
+
+@synthesize cancelled = _cancelled;
 @synthesize executing = _executing;
 @synthesize finished = _finished;
+@synthesize suspend = _suspend;
 
 - (instancetype)initWithConfig:(BNM3U8DownloadConfig *)config downloadDstRootPath:(NSString *)path sessionManager:(AFURLSessionManager *)sessionManager progressBlock:(BNM3U8DownloadOperationProgressBlock)progressBlock resultBlock:(BNM3U8DownloadOperationResultBlock)resultBlock{
     NSParameterAssert(config);
@@ -49,6 +53,8 @@
         _progressBlock = progressBlock;
         _executing = NO;
         _finished = NO;
+        _suspend = NO;
+        _cancelled = NO;
         _operationSemaphore = dispatch_semaphore_create(1);
         _downloadResultCountSemaphore = dispatch_semaphore_create(1);
         _downloadQueue = [[NSOperationQueue alloc]init];
@@ -67,6 +73,9 @@
             [self reset];
             return;
         }
+        if(self.suspend) {
+            return;
+        }
         
         __weak __typeof(self) weakSelf = self;
         
@@ -77,20 +86,11 @@
             return;
         }
         
-        //获取文本文件，发起下一级下载
-        [BNM3U8AnalysisService analysisWithURL:_config.url  rootPath:_downloadDstRootPath  resultBlock:^(NSError * _Nullable error, BNM3U8PlistInfo * _Nullable plistInfo) {
-            if (error) {
-                ///failed
-                self.resultBlock(error, nil);
-                [self done];
-                return;
-            }
-            self.plistInfo = plistInfo;
-            ///to download 发起下一级下载
-            [plistInfo.fileInfos enumerateObjectsUsingBlock:^(BNM3U8fileInfo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        void (^subOperationlock)(void) = ^(void) {
+            [self.plistInfo.fileInfos enumerateObjectsUsingBlock:^(BNM3U8fileInfo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 NSParameterAssert(obj.downloadUrl);
                 BNM3U8FileDownLoadOperation *operation = [[BNM3U8FileDownLoadOperation alloc]initWithFileInfo:obj sessionManager:self.sessionManager resultBlock:^(NSError * _Nullable error, id _Nullable info) {
-                    /// remove from map
+                    
                     LOCK(self.operationSemaphore);
                     [self removeOperationFormMapWithUrl:obj.downloadUrl];
                     UNLOCK(self.operationSemaphore);
@@ -106,13 +106,38 @@
                 [self.downloadOperationsMap setValue:operation forKey:obj.downloadUrl];
                 UNLOCK(weakSelf.operationSemaphore);
             }];
-        }];
+            self.executing = YES;
+        };
+        
+        if (self.plistInfo) {
+            subOperationlock();
+        } else {
+            [BNM3U8AnalysisService analysisWithURL:_config.url rootPath:_downloadDstRootPath resultBlock:^(NSError * _Nullable error, BNM3U8PlistInfo * _Nullable plistInfo) {
+                @synchronized (self) {
+                    if (self.isCancelled) {
+                        self.finished = YES;
+                        [self reset];
+                        return;
+                    }
+                    if (error) {
+                        self.resultBlock(error, nil);
+                        [self done];
+                        return;
+                    }
+                    self.plistInfo = plistInfo;
+                    if (self.suspend) {
+                        return;
+                    }
+                    subOperationlock();
+                }
+            }];
+        }
     }
-    self.executing = YES;
 }
 
 - (void)cancel{
     @synchronized (self) {
+        self.cancelled = YES;
         if(self.finished) return;
         [super cancel];
         LOCK(self.operationSemaphore);
@@ -127,6 +152,42 @@
         if(self.executing) self.executing = NO;
         if(!self.finished) self.finished = YES;
         [self reset];
+    }
+}
+#pragma mark -
+- (void)suspend {
+    @synchronized (self) {
+        if (self.executing) {
+            _downloadQueue.suspended = YES;
+            LOCK(self.operationSemaphore);
+            for (NSString *key in self.downloadOperationsMap.allKeys) {
+                BNM3U8FileDownLoadOperation *op = self.downloadOperationsMap[key];
+                [op suspend];
+            }
+            UNLOCK(self.operationSemaphore);
+            self.suspend = YES;
+            self.executing = NO;
+        }
+    }
+}
+
+- (void)resume {
+    @synchronized (self) {
+        if (!self.suspend) return;
+        _downloadQueue.suspended = NO;
+        if(!self.plistInfo) {
+            self.suspend = NO;
+            [self start];
+        } else {
+            LOCK(self.operationSemaphore);
+            for (NSString *key in self.downloadOperationsMap.allKeys) {
+                BNM3U8FileDownLoadOperation *op = self.downloadOperationsMap[key];
+                [op resume];
+            }
+            UNLOCK(self.operationSemaphore);
+            self.suspend = NO;
+            self.executing = YES;
+        }
     }
 }
 
@@ -170,7 +231,7 @@
     BOOL finish = _downloadSuccessCount + _downloadFailCount == _plistInfo.fileInfos.count;
     BOOL failed = _downloadFailCount > 0;
     NSInteger failedCount = _downloadFailCount;
-    if(self.progressBlock) _progressBlock(_downloadSuccessCount/(_plistInfo.fileInfos.count * 1.0));
+    if(_progressBlock) _progressBlock(_downloadSuccessCount/(_plistInfo.fileInfos.count * 1.0));
     UNLOCK(_downloadResultCountSemaphore);
     if (finish) {
         if (failed) {
@@ -200,31 +261,17 @@
     return  [BNFileManager tryGreateDir:[self.downloadDstRootPath stringByAppendingPathComponent:[self.config.url md5]]];
 }
 
-- (void)suspend {
-    @synchronized (self) {
-        _downloadQueue.suspended = YES;
-        LOCK(self.operationSemaphore);
-        for (NSString *key in self.downloadOperationsMap.allKeys) {
-            BNM3U8FileDownLoadOperation *op = self.downloadOperationsMap[key];
-            [op suspend];
-        }
-        UNLOCK(self.operationSemaphore);
-    }
-}
-
-- (void)resume {
-    @synchronized (self) {
-        _downloadQueue.suspended = NO;
-        LOCK(self.operationSemaphore);
-        for (NSString *key in self.downloadOperationsMap.allKeys) {
-            BNM3U8FileDownLoadOperation *op = self.downloadOperationsMap[key];
-            [op resume];
-        }
-        UNLOCK(self.operationSemaphore);
-    }
-}
-
 #pragma mark - setter / getter
+- (void)setCancelled:(BOOL)cancelled {
+    [self willChangeValueForKey:@"isCancelled"];
+    _cancelled = cancelled;
+    [self didChangeValueForKey:@"isCancelled"];
+}
+- (void)setSuspend:(BOOL)suspend {
+    [self willChangeValueForKey:@"isSuspend"];
+    _suspend = suspend;
+    [self didChangeValueForKey:@"isSuspend"];
+}
 - (void)setFinished:(BOOL)finished {
     [self willChangeValueForKey:@"isFinished"];
     _finished = finished;

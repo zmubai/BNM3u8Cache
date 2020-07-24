@@ -2,8 +2,8 @@
 //  BNM3u8Cache.h
 //  BNM3u8Cache
 //
-//  Created by Bennie on 12/11/19.
-//  Copyright © 2019 Bennie. All rights reserved.
+//  Created by liangzeng on 12/11/19.
+//  Copyright © 2019 liangzeng. All rights reserved.
 //
 
 #ifndef BNM3u8Cache_h

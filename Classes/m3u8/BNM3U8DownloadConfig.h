@@ -3,7 +3,7 @@
 //  m3u8Demo
 //
 //  Created by zengbailiang on 2019/7/20.
-//  Copyright © 2019 Bennie. All rights reserved.
+//  Copyright © 2019 liangzeng. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>

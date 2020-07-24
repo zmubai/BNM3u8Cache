@@ -2,8 +2,8 @@
 //  BNM3U8FileDownLoadOperation.m
 //  m3u8Demo
 //
-//  Created by Bennie on 6/14/19.
-//  Copyright © 2019 Bennie. All rights reserved.
+//  Created by liangzeng on 6/14/19.
+//  Copyright © 2019 liangzeng. All rights reserved.
 //
 
 #import "BNM3U8FileDownLoadOperation.h"
@@ -43,7 +43,7 @@
             [self reset];
             return;
         }
-        ///file already exit
+        
         if([BNFileManager exitItemWithPath:_fileInfo.dstFilePath]){
             _resultBlock(nil,_fileInfo);
             [self done];

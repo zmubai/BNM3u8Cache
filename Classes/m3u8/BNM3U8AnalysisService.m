@@ -2,8 +2,8 @@
 //  BNM3U8AnalysisService.m
 //  m3u8Demo
 //
-//  Created by Bennie on 6/14/19.
-//  Copyright © 2019 Bennie. All rights reserved.
+//  Created by liangzeng on 6/14/19.
+//  Copyright © 2019 liangzeng. All rights reserved.
 //
 
 #import "BNM3U8AnalysisService.h"
@@ -24,54 +24,56 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
     NSLog(@"analysis start");
     
     NSString *oriM3u8Path = [fullPerfixPath(rootPath,urlStr) stringByAppendingPathComponent:@"ori.m3u8"];
-    NSString *oriM3u8String = [NSString stringWithContentsOfFile:oriM3u8Path encoding:0 error:nil];
-    
-    //    NSString *oriM3u8String = [NSString stringWithContentsOfFile:[[ZBLM3u8Setting fullCommonDirPrefixWithUrl:urlStr] stringByAppendingPathComponent:[ZBLM3u8Setting oriM3u8InfoFileName]] encoding:0 error:nil];
-    
-    __block BOOL happenException = NO;
-    if (oriM3u8String.length) {
-        NSLog(@"use local oriM3u8Info");
+    //    NSString *oriM3u8String = [NSString stringWithContentsOfFile:oriM3u8Path encoding:0 error:nil];
+    NSURLSessionDataTask *task = [[NSURLSession sharedSession]dataTaskWithURL:[NSURL URLWithString:urlStr] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        NSString * oriM3u8String  =[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        __block BOOL happenException = NO;
+        if (oriM3u8String.length) {
+            NSLog(@"use local oriM3u8Info");
+            @try {
+                [BNM3U8AnalysisService analysisWithOriUrlString:urlStr m3u8String:oriM3u8String rootPath:rootPath resultBlock:resultBlock];
+            } @catch (NSException *exception) {
+                happenException = YES;
+                [[BNFileManager shareInstance]removeFileWithPath:oriM3u8Path];
+                resultBlock([[NSError alloc]initWithDomain:@"原始m3u8文本文件解析错误" code:NSURLErrorUnknown userInfo:@{@"info":exception.reason}],nil);
+            } @finally {
+                
+            }
+            if (!happenException) {
+                return;
+            }
+        }
+        
+        happenException = NO;
+        NSString *m3u8Str = nil;
         @try {
-            [BNM3U8AnalysisService analysisWithOriUrlString:urlStr m3u8String:oriM3u8String rootPath:rootPath resultBlock:resultBlock];
+            NSError *error = nil;
+            
+            m3u8Str = [[NSString alloc] initWithContentsOfURL:[NSURL URLWithString:urlStr] usedEncoding:0 error:&error];
+            
+            if (error)
+            {
+                resultBlock(error,nil);
+                return ;
+            }
+            if (m3u8Str.length == 0)
+            {
+                resultBlock([[NSError alloc]initWithDomain:@"原始m3u8文件内容为空" code:NSURLErrorBadServerResponse userInfo:nil],nil);
+                return;
+            }
+            [BNM3U8AnalysisService analysisWithOriUrlString:urlStr m3u8String:m3u8Str rootPath:rootPath resultBlock:resultBlock];
         } @catch (NSException *exception) {
             happenException = YES;
-            [[BNFileManager shareInstance]removeFileWithPath:oriM3u8Path];
             resultBlock([[NSError alloc]initWithDomain:@"原始m3u8文本文件解析错误" code:NSURLErrorUnknown userInfo:@{@"info":exception.reason}],nil);
-        } @finally {
-            
-        }
-        if (!happenException) {
-            return;
-        }
-    }
-    ///由于任务已经是异步发起，可以直接使用 initWithContentsOfURL 获取文本数据
-    happenException = NO;
-    NSString *m3u8Str = nil;
-    @try {
-        NSError *error = nil;
-        m3u8Str = [[NSString alloc] initWithContentsOfURL:[NSURL URLWithString:urlStr] usedEncoding:0 error:&error];
+        } @finally {}
         
-        if (error)
-        {
-            resultBlock(error,nil);
-            return ;
+        if (!happenException) {
+            /// save dst m3u8 info file
+            NSString *dstM3u8Path = [fullPerfixPath(rootPath,urlStr) stringByAppendingPathComponent:@"local.m3u8"];
+            [[BNFileManager shareInstance]saveDate:[m3u8Str dataUsingEncoding:NSUTF8StringEncoding] ToFile:dstM3u8Path completaionHandler:nil];
         }
-        if (m3u8Str.length == 0)
-        {
-            resultBlock([[NSError alloc]initWithDomain:@"原始m3u8文件内容为空" code:NSURLErrorBadServerResponse userInfo:nil],nil);
-            return;
-        }
-        [BNM3U8AnalysisService analysisWithOriUrlString:urlStr m3u8String:m3u8Str rootPath:rootPath resultBlock:resultBlock];
-    } @catch (NSException *exception) {
-        happenException = YES;
-        resultBlock([[NSError alloc]initWithDomain:@"原始m3u8文本文件解析错误" code:NSURLErrorUnknown userInfo:@{@"info":exception.reason}],nil);
-    } @finally {}
-    
-    if (!happenException) {
-        /// save dst m3u8 info file
-        NSString *dstM3u8Path = [fullPerfixPath(rootPath,urlStr) stringByAppendingPathComponent:@"local.m3u8"];
-        [[BNFileManager shareInstance]saveDate:[m3u8Str dataUsingEncoding:NSUTF8StringEncoding] ToFile:dstM3u8Path completaionHandler:nil];
-    }
+    }];
+    [task resume];
 }
 
 + (void)analysisWithOriUrlString:(NSString*)OriUrlString m3u8String:(NSString*)m3u8String rootPath:(NSString *)rootPath resultBlock:(BNM3U8AnalysisServiceResultBlock)resultBlock
@@ -108,9 +110,9 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
         fileInfo.oriUrlString = info.keyUri;
         fileInfo.index = - 1;
         /* /md5(url)/keyName*/
-        fileInfo.relativeUrl =  [NSString stringWithFormat:@"/%@/key",[OriUrlString md5]];
+        fileInfo.relativeUrl =  [NSString stringWithFormat:@"%@/key",[OriUrlString md5]];
         [fileInfos addObject:fileInfo];
-        fileInfo.diskPath =  [NSString stringWithFormat:@"%@%@",rootPath,fileInfo.relativeUrl];
+        fileInfo.diskPath =  [NSString stringWithFormat:@"%@/%@",rootPath,fileInfo.relativeUrl];
         
     }
     NSRange tsRange = [m3u8String rangeOfString:@"#EXTINF:"];
@@ -170,8 +172,12 @@ NSString *fullPerfixPath(NSString *rootPath,NSString *url){
     __block NSString *body = @"";
     
     [m3u8Info.fileInfos enumerateObjectsUsingBlock:^(BNM3U8fileInfo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if(idx == -1 ){
-            keyStr = [NSString stringWithFormat:@"#EXT-X-KEY:METHOD=%@,URI=\"%@\",IV=%@\n",m3u8Info.keyMethod,obj.relativeUrl,m3u8Info.keyIv];
+        if(obj.index == -1 ){
+            if(m3u8Info.keyIv.length) {
+                    keyStr = [NSString stringWithFormat:@"#EXT-X-KEY:METHOD=%@,URI=\"%@\",IV=%@\n",m3u8Info.keyMethod,[localhost stringByAppendingString:obj.relativeUrl],m3u8Info.keyIv];
+            } else {
+                keyStr = [NSString stringWithFormat:@"#EXT-X-KEY:METHOD=%@,URI=\"%@\"\n",m3u8Info.keyMethod,[localhost stringByAppendingString:obj.relativeUrl]];
+            }
         }
         else{
             NSString *tsInfo = [NSString stringWithFormat:@"#EXTINF:%.6lf,\n%@\n",obj.duration.floatValue,[localhost stringByAppendingString:obj.relativeUrl]];

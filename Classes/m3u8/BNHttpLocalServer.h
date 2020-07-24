@@ -2,8 +2,8 @@
 //  BNHttpLocalServer.h
 //  m3u8DownloadSimpleDemo
 //
-//  Created by Bennie on 2019/4/29.
-//  Copyright © 2019年 Bennie. All rights reserved.
+//  Created by liangzeng on 2019/4/29.
+//  Copyright © 2019年 liangzeng. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>

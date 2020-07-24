@@ -3,7 +3,7 @@
 //  m3u8Demo
 //
 //  Created by zengbailiang on 2019/8/3.
-//  Copyright © 2019 Bennie. All rights reserved.
+//  Copyright © 2019 liangzeng. All rights reserved.
 //
 
 #import "BNM3U8fileInfo.h"

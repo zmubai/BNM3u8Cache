@@ -2,8 +2,8 @@
 //  ViewController.m
 //  m3u8DownloadSimpleDemo
 //
-//  Created by Bennie on 2019/4/4.
-//  Copyright © 2019年 Bennie. All rights reserved.
+//  Created by liangzeng on 2019/4/4.
+//  Copyright © 2019年 liangzeng. All rights reserved.
 //
 
 #import "ViewController.h"
@@ -20,6 +20,7 @@
 @property (strong, nonatomic) UIScrollView *scrollView;
 @property (strong, nonatomic) UIScrollView *progressView;
 @property (strong, nonatomic) NSArray *urlArr;
+@property (strong, nonatomic) NSMutableArray *players;
 @end
 
 @implementation ViewController
@@ -34,9 +35,10 @@
     UIButton *clearBtn = [self btnWithTitle:@"清除文件" sel:@selector(clearRootPath)];
     UIButton *startBtn = [self btnWithTitle:@"开始" sel:@selector(start)];
     UIButton *cannelBtn = [self btnWithTitle:@"取消" sel:@selector(cannel)];
-
+    
     UIButton *suspendBtn = [self btnWithTitle:@"暂停" sel:@selector(suspend)];
     UIButton *resumeBtn = [self btnWithTitle:@"恢复" sel:@selector(resume)];
+    
     CGFloat edge = 30;
     CGFloat gap = 15;
     CGFloat width  = 90;
@@ -53,6 +55,8 @@
     
     CGFloat y = self.progressView.frame.origin.y + self.progressView.frame.size.height + gap;
     self.scrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(edge, y, self.view.bounds.size.width - 2 * edge, self.view.bounds.size.height - y)];
+    self.scrollView.showsVerticalScrollIndicator = NO;
+    self.scrollView.showsHorizontalScrollIndicator = NO;
     [self.view addSubview:self.scrollView];
 }
 
@@ -78,12 +82,9 @@
 - (void)configM3u8 {
     NSString *rootPath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory,NSUserDomainMask,YES) objectAtIndex:0] stringByAppendingPathComponent:@"m3u8files"];
     BNM3U8ManagerConfig *config = BNM3U8ManagerConfig.new;
-    /*媒体下载并发数控制*/
     config.videoMaxConcurrenceCount = 5;
     config.downloadDstRootPath = rootPath;
-    //    config.netOption = BNM3U8DownloadSupportNetOptionWifi;
     [[BNM3U8Manager shareInstance] fillConfig:config];
-    
     BNHttpLocalServer.shareInstance.documentRoot = rootPath;
     NSLog(@"rootPath:%@",rootPath);
     BNHttpLocalServer.shareInstance.port = 8080;
@@ -92,13 +93,10 @@
      一些免费的m3u8链接【格式可能不兼容，需要分析处理】
      https://bitmovin.com/mpeg-dash-hls-examples-sample-streams/
      */
-    //    self.urlArr = @[@"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_360_1000000.m3u8",
-    //                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_540_1500000.m3u8",
-    //                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_720_3000000.m3u8",
-    //                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_1080_5000000.m3u8"
-    //    ].mutableCopy;
     self.urlArr = @[@"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_360_1000000.m3u8",
-                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_540_1500000.m3u8"
+                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_540_1500000.m3u8",
+                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_720_3000000.m3u8",
+                    @"https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560_video_1080_5000000.m3u8"
     ].mutableCopy;
 }
 
@@ -134,6 +132,9 @@
         [BNM3U8Manager.shareInstance downloadVideoWithConfig:dlConfig progressBlock:^(CGFloat progress) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 label.text = [NSString stringWithFormat:@"%.00f%%",progress * 100];
+                if (!label.superview) {
+                    [self.progressView addSubview:label];
+                }
             });
         }resultBlock:^(NSError * _Nullable error, NSString * _Nullable localPlayUrl) {
             if(localPlayUrl)
@@ -158,6 +159,10 @@
 {
     NSString *rootPath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory,NSUserDomainMask,YES) objectAtIndex:0] stringByAppendingPathComponent:@"m3u8files"];
     [BNFileManager.shareInstance removeFileWithPath:rootPath];
+    [self.players enumerateObjectsUsingBlock:^(AVPlayer  *_Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [obj pause];
+    }];
+    [self.players removeAllObjects];
 }
 
 - (void)suspend{
@@ -182,11 +187,20 @@
     [self.playerView.layer addSublayer:self.playerLayer];
     [self.scrollView addSubview:self.playerView];
     [self.player play];
+    [self.players addObject:self.player];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+#pragma mark -
+- (NSMutableArray *)players {
+    if (!_players) {
+        _players = [[NSMutableArray alloc]init];
+    }
+    return _players;
 }
 
 @end

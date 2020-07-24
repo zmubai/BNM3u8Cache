@@ -2,8 +2,8 @@
 //  BNM3U8Manager.m
 //  m3u8Demo
 //
-//  Created by Bennie on 6/14/19.
-//  Copyright © 2019 Bennie. All rights reserved.
+//  Created by liangzeng on 6/14/19.
+//  Copyright © 2019 liangzeng. All rights reserved.
 //
 
 #import "BNM3U8Manager.h"
@@ -133,7 +133,6 @@
 {
     if (!_sessionManager) {
         _sessionManager = [[AFURLSessionManager alloc]initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-        //// should create customer queue
         _sessionManager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     }
     return _sessionManager;
