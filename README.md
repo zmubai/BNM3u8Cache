@@ -66,5 +66,5 @@ m3u8格式形式比较多，没有兼容到。只能慢慢兼容，更新，做�
 #### 更新list
 1. 添加相对路径的索引文件解析
 2. 本地服务 CocoaHTTPServer(年久失修) 切换到 GCDWebServer(持续更新)。2019-12-09
-
+3. version：1.1.0。detail：1.修正key组装路径错误、iv非空处理等。2.添加suspend resume等功能、梳理任务执行流程、完善cannel、suspend功能、多线程死锁问题修正。2020-7-24
 ## 欢迎issues和指正。
